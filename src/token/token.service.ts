@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ethers } from 'ethers';
+import { BigNumber } from '@ethersproject/bignumber';
 import * as Tara from './contracts/Tara.json';
 
 @Injectable()
@@ -30,7 +31,8 @@ export class TokenService {
     return decimals.toString();
   }
   async totalSupply() {
+    const decimals = await this.tokenContract.decimals();
     const totalSupply = await this.tokenContract.totalSupply();
-    return totalSupply.toString();
+    return totalSupply.div(BigNumber.from(10).pow(decimals)).toString();
   }
 }
