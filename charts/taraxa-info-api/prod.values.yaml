@@ -13,20 +13,20 @@ ingress:
   hosts:
     - host: api.taraxa.io
   tls:
-    - secretName: wild-community-taraxa-io-tls
+    - secretName: wild-api-taraxa-io-tls
       hosts:
         - api.taraxa.io
 
 resources:
   limits:
-    cpu: 2000m
-    memory: 2048Mi
-  requests:
     cpu: 500m
-    memory: 1024Mi
+    memory: 512Mi
+  requests:
+    cpu: 125m
+    memory: 256Mi
 
 autoscaling:
   enabled: true
   minReplicas: 2
-  maxReplicas: 20
+  maxReplicas: 10
   targetCPUUtilizationPercentage: 80
