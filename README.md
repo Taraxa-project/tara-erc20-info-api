@@ -4,6 +4,9 @@
 
 Information about the TARA ERC20:
 
+- name
+- symbol
+- decimals
 - total supply
 
 ## Installation
