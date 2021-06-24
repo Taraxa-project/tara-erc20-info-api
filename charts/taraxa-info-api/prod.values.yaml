@@ -1,0 +1,32 @@
+app:
+  environment: production
+  tokenAddress: 0xf001937650bb4f62b57521824b2c20f5b91bea05
+
+image:
+  tag: "latest"
+  pullPolicy: Always
+
+nodeSelector:
+  cloud.google.com/gke-nodepool: taraxa-community-prod
+
+ingress:
+  hosts:
+    - host: api.taraxa.io
+  tls:
+    - secretName: wild-community-taraxa-io-tls
+      hosts:
+        - api.taraxa.io
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 2048Mi
+  requests:
+    cpu: 500m
+    memory: 1024Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 80

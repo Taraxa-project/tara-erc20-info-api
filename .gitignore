@@ -396,3 +396,4 @@ Temporary Items
 # Local
 .env
 dist
+/charts/taraxa-info-api/prod.secret.values.yaml
