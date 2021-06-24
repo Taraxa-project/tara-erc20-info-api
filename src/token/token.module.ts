@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module, CacheModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TokenController } from './token.controller';
 import { TokenService } from './token.service';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule, CacheModule.register()],
   controllers: [TokenController],
-  providers: [TokenService]
+  providers: [TokenService],
 })
 export class TokenModule {}
