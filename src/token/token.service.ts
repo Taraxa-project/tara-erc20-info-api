@@ -92,19 +92,19 @@ export class TokenService {
   }
   async totalCirculation() {
     return (
-      (await this.totalSupply()) -
-      (await this.totalLocked()) -
-      (await this.totalStaked())
+      Number(await this.totalSupply()) -
+      Number(await this.totalLocked()) -
+      Number(await this.totalStaked())
     );
   }
   async stakingRatio() {
     return (
-      ((await this.totalStaked()) /
-        ((await this.totalSupply()) - (await this.totalLocked()))) *
+      (Number(await this.totalStaked()) /
+        (Number(await this.totalSupply()) - Number(await this.totalLocked()))) *
       100
     );
   }
   async mktCap() {
-    return (await this.totalCirculation()) * (await this.getPrice());
+    return Number(await this.totalCirculation()) * (await this.getPrice());
   }
 }
