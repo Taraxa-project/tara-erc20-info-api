@@ -21,6 +21,11 @@ export class TokenController {
   async getSymbol() {
     return await this.tokenService.getSymbol();
   }
+  @Get('price')
+  @CacheTTL(36000)
+  async getPrice() {
+    return await this.tokenService.getPrice();
+  }
   @Get('decimals')
   @CacheTTL(36000)
   async getDecimals() {

@@ -1,15 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ethers } from 'ethers';
 import { BigNumber } from '@ethersproject/bignumber';
 import * as Tara from './contracts/Tara.json';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom, catchError, map } from 'rxjs';
 
 @Injectable()
 export class TokenService {
+  private readonly logger = new Logger(TokenService.name);
   private ethersProvider: ethers.providers.JsonRpcProvider;
   private tokenContract: ethers.Contract;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private readonly httpService: HttpService,
+  ) {
     this.ethersProvider = new ethers.providers.JsonRpcProvider(
       this.configService.get<string>('provider'),
     );
@@ -29,6 +40,34 @@ export class TokenService {
   async getDecimals() {
     const decimals = await this.tokenContract.decimals();
     return decimals.toString();
+  }
+  async getPrice() {
+    const taraDetailsCG = this.configService.get<string>('coinGeckoTaraxaApi');
+    let priceDetails;
+    try {
+      const realTimePriceData = await firstValueFrom(
+        this.httpService
+          .get(taraDetailsCG)
+          .pipe(
+            catchError((error) => {
+              this.logger.error(error);
+              throw new ForbiddenException('API not available');
+            }),
+          )
+          .pipe(
+            map((res) => {
+              return res.data;
+            }),
+          ),
+      );
+      priceDetails = realTimePriceData;
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(
+        'Fetching details unsuccessful. Please try again later.',
+      );
+    }
+    return Number(priceDetails.taraxa.usd || 0);
   }
   async totalSupply() {
     const decimals = await this.tokenContract.decimals();
