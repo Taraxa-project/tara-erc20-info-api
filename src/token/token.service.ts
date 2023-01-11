@@ -82,4 +82,29 @@ export class TokenService {
       return totalStaked.div(BigNumber.from(10).pow(decimals)).toString();
     } else return '0';
   }
+  async totalLocked() {
+    const deployerAddress = this.configService.get<string>('deployerAddress');
+    if (deployerAddress) {
+      const decimals = await this.tokenContract.decimals();
+      const totalLocked = await this.tokenContract.balanceOf(deployerAddress);
+      return totalLocked.div(BigNumber.from(10).pow(decimals)).toString();
+    } else return '0';
+  }
+  async totalCirculation() {
+    return (
+      (await this.totalSupply()) -
+      (await this.totalLocked()) -
+      (await this.totalStaked())
+    );
+  }
+  async stakingRatio() {
+    return (
+      ((await this.totalStaked()) /
+        ((await this.totalSupply()) - (await this.totalLocked()))) *
+      100
+    );
+  }
+  async mktCap() {
+    return (await this.totalCirculation()) * (await this.getPrice());
+  }
 }

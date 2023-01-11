@@ -36,4 +36,24 @@ export class TokenController {
   async totalSupply() {
     return await this.tokenService.totalSupply();
   }
+  @Get('totalLocked')
+  @CacheTTL(36000)
+  async totalLocked() {
+    return await this.tokenService.totalLocked();
+  }
+  @Get('totalCirculating')
+  @CacheTTL(36000)
+  async totalInCirculation() {
+    return await this.tokenService.totalCirculation();
+  }
+  @Get('stakingRatio')
+  @CacheTTL(36000)
+  async stakingRatio() {
+    return await this.tokenService.stakingRatio();
+  }
+  @Get('mktCap')
+  @CacheTTL(36000)
+  async mktCap() {
+    return await this.tokenService.mktCap();
+  }
 }
