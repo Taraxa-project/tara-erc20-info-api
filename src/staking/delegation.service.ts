@@ -21,7 +21,6 @@ export class DelegationService {
     const delegationApi = `${this.configService.get<string>(
       'delegationAPIRoot',
     )}/validators?show_fully_delegated=true&show_my_validators=false`;
-    this.logger.log(delegationApi);
     let delegationData;
     try {
       const realTimeDelegationData = await firstValueFrom(
