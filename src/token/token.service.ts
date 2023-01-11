@@ -35,4 +35,12 @@ export class TokenService {
     const totalSupply = await this.tokenContract.totalSupply();
     return totalSupply.div(BigNumber.from(10).pow(decimals)).toString();
   }
+  async totalStaked() {
+    const stakingAddress = this.configService.get<string>('stakingAddress');
+    if (stakingAddress) {
+      const decimals = await this.tokenContract.decimals();
+      const totalStaked = await this.tokenContract.balanceOf(stakingAddress);
+      return totalStaked.div(BigNumber.from(10).pow(decimals)).toString();
+    } else return '0';
+  }
 }
