@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import general from './config/general';
+import { NodeModule } from './node/node.module';
 import { StakingModule } from './staking/staking.module';
 import { TokenModule } from './token/token.module';
 
@@ -12,6 +13,7 @@ import { TokenModule } from './token/token.module';
     }),
     TokenModule,
     StakingModule,
+    NodeModule,
   ],
 })
 export class AppModule {}
