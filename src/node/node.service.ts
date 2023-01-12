@@ -7,8 +7,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { catchError, firstValueFrom, map } from 'rxjs';
-
-const WEEK_LENGTH = 604800000;
+import getWeek from 'src/utils/date';
 
 @Injectable()
 export class NodeService {
@@ -19,20 +18,21 @@ export class NodeService {
   ) {}
 
   async noActiveValidators(testnet?: boolean) {
-    let delegationRoot;
+    let explorerRoot;
     if (testnet) {
-      delegationRoot = this.configService.get<string>(
-        'testnetDelegationAPIRoot',
-      );
+      explorerRoot = this.configService.get<string>('testnetExplorerRoot');
     } else {
-      delegationRoot = this.configService.get<string>('delegationAPIRoot');
+      explorerRoot = this.configService.get<string>('explorerRoot');
     }
-    const delegationApi = `${delegationRoot}/validators?show_fully_delegated=true&show_my_validators=false`;
-    let delegationData;
+    const explorerApi = `${explorerRoot}/api/nodes?week=${getWeek(
+      1,
+    )}&year=${new Date().getUTCFullYear()}`;
+    this.logger.log(explorerApi);
+    let activeNodeNumber;
     try {
       const realTimeDelegationData = await firstValueFrom(
         this.httpService
-          .get(delegationApi)
+          .get(explorerApi)
           .pipe(
             catchError((error) => {
               this.logger.error(error);
@@ -41,29 +41,20 @@ export class NodeService {
           )
           .pipe(
             map((res) => {
-              return res.data;
+              this.logger.log(res.data);
+              return res.data.total;
             }),
           ),
       );
-      delegationData = realTimeDelegationData;
+      activeNodeNumber = realTimeDelegationData;
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException(
         'Fetching details unsuccessful. Please try again later.',
       );
     }
-    let totalActive = 0;
-    delegationData.forEach((node: any) => {
-      if (
-        node.isActive ||
-        new Date().getTime() - WEEK_LENGTH >
-          new Date(node.lastBlockCreatedAt).getTime()
-      ) {
-        totalActive++;
-      }
-    });
     return {
-      totalActive,
+      totalActive: activeNodeNumber,
     };
   }
 }
