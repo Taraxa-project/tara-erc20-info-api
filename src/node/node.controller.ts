@@ -23,4 +23,10 @@ export class NodeController {
   async totaltotalActiveValidatorsTestnet() {
     return (await this.nodeService.noActiveValidators(true)).totalActive;
   }
+
+  @Get('cumulativeCommission')
+  @CacheTTL(36000)
+  async cumulativeCommission() {
+    return await this.nodeService.cumulativeCommisson();
+  }
 }
