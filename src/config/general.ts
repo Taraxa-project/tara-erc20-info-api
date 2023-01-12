@@ -8,4 +8,6 @@ export default () => ({
   explorerRoot: process.env.EXPLORER_API_ROOT_URI,
   testnetExplorerRoot: process.env.TESTNET_EXPLORER_API_ROOT_URI,
   coinGeckoTaraxaApi: process.env.COINGECKO_API_TARAXA_URI,
+  githubAccessToken: process.env.GITHUB_ACCESS_TOKEN,
+  graphQLGitHubURI: 'https://api.github.com/graphql',
 });
