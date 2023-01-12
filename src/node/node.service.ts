@@ -76,7 +76,7 @@ export class NodeService {
   async cumulativeCommisson() {
     let isDone = false;
     let cumulativeCommission = BigNumber.from(0);
-    let index = 100;
+    let index = 0;
     while (!isDone) {
       const res: {
         validators: ValidatorData[];
@@ -88,7 +88,6 @@ export class NodeService {
         index += 100;
       }
       res.validators.forEach((validator) => {
-        this.logger.log(`Scanning validator ${validator.account}`);
         cumulativeCommission = cumulativeCommission.add(
           BigNumber.from(validator.info.commission_reward),
         );
