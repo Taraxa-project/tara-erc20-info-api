@@ -45,20 +45,20 @@ export class TokenService {
     const taraDetailsCG = this.configService.get<string>('coinGeckoTaraxaApi');
     let priceDetails;
     try {
+      const headers = {
+        'Content-Type': 'application/json',
+        'Accept-Encoding': 'gzip,deflate,compress',
+      };
       const realTimePriceData = await firstValueFrom(
-        this.httpService
-          .get(taraDetailsCG)
-          .pipe(
-            catchError((error) => {
-              this.logger.error(error);
-              throw new ForbiddenException('API not available');
-            }),
-          )
-          .pipe(
-            map((res) => {
-              return res.data;
-            }),
-          ),
+        this.httpService.get(taraDetailsCG, { headers }).pipe(
+          map((res) => {
+            return res.data;
+          }),
+          catchError((error) => {
+            this.logger.error(error);
+            throw new ForbiddenException('API not available');
+          }),
+        ),
       );
       priceDetails = realTimePriceData;
     } catch (error) {
