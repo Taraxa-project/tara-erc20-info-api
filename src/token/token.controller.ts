@@ -21,6 +21,11 @@ export class TokenController {
   async getSymbol() {
     return await this.tokenService.getSymbol();
   }
+  @Get('price')
+  @CacheTTL(36000)
+  async getPrice() {
+    return await this.tokenService.getPrice();
+  }
   @Get('decimals')
   @CacheTTL(36000)
   async getDecimals() {
@@ -30,5 +35,25 @@ export class TokenController {
   @CacheTTL(36000)
   async totalSupply() {
     return await this.tokenService.totalSupply();
+  }
+  @Get('totalLocked')
+  @CacheTTL(36000)
+  async totalLocked() {
+    return await this.tokenService.totalLocked();
+  }
+  @Get('totalCirculating')
+  @CacheTTL(36000)
+  async totalInCirculation() {
+    return await this.tokenService.totalCirculation();
+  }
+  @Get('stakingRatio')
+  @CacheTTL(36000)
+  async stakingRatio() {
+    return await this.tokenService.stakingRatio();
+  }
+  @Get('mktCap')
+  @CacheTTL(36000)
+  async mktCap() {
+    return await this.tokenService.mktCap();
   }
 }

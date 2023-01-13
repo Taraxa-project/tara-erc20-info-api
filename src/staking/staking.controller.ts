@@ -44,7 +44,8 @@ export class StakingController {
         Number(
           (await this.delegationService.averageWeightedCommission())
             .averageWeightedCommission,
-        ))
+        ) /
+          100)
     );
   }
 }
