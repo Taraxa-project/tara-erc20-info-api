@@ -42,24 +42,22 @@ export class NodeService {
     const explorerApi = `${explorerRoot}/api/nodes?week=${getWeek(
       1,
     )}&year=${new Date().getUTCFullYear()}`;
-    this.logger.log(explorerApi);
-    let activeNodeNumber;
+    let activeNodeNumber = 0;
     try {
+      const headers = {
+        'Content-Type': 'application/json',
+        'Accept-Encoding': 'gzip,deflate,compress',
+      };
       const realTimeDelegationData = await firstValueFrom(
-        this.httpService
-          .get(explorerApi)
-          .pipe(
-            catchError((error) => {
-              this.logger.error(error);
-              throw new ForbiddenException('API not available');
-            }),
-          )
-          .pipe(
-            map((res) => {
-              this.logger.log(res.data);
-              return res.data.total;
-            }),
-          ),
+        this.httpService.get(explorerApi, { headers }).pipe(
+          map((res) => {
+            return res.data.total;
+          }),
+          catchError((error) => {
+            this.logger.error(error);
+            throw new ForbiddenException('API not available');
+          }),
+        ),
       );
       activeNodeNumber = realTimeDelegationData;
     } catch (error) {
@@ -77,22 +75,29 @@ export class NodeService {
     let isDone = false;
     let cumulativeCommission = BigNumber.from(0);
     let index = 0;
-    while (!isDone) {
-      const res: {
-        validators: ValidatorData[];
-        end: boolean;
-      } = await this.dposContract.getValidators(index);
-      if (res.end) {
-        isDone = true;
-      } else {
-        index += 100;
+    try {
+      while (!isDone) {
+        const res: {
+          validators: ValidatorData[];
+          end: boolean;
+        } = await this.dposContract.getValidators(index);
+        if (res.end) {
+          isDone = true;
+        } else {
+          index += 100;
+        }
+        res.validators.forEach((validator) => {
+          cumulativeCommission = cumulativeCommission.add(
+            BigNumber.from(validator.info.commission_reward),
+          );
+        });
       }
-      res.validators.forEach((validator) => {
-        cumulativeCommission = cumulativeCommission.add(
-          BigNumber.from(validator.info.commission_reward),
-        );
-      });
+    } catch (error) {
+      this.logger.error(`Fetching DPOS Contract data failed ${error}`);
+      throw new InternalServerErrorException(
+        'Fetching DPOS Contract data failed. Please try again later!',
+      );
     }
-    return cumulativeCommission.toString();
+    return ethers.utils.formatEther(cumulativeCommission.toString());
   }
 }

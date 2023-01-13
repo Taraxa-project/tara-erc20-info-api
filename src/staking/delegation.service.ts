@@ -34,13 +34,13 @@ export class DelegationService {
   async averageWeightedCommission() {
     const delegationData = await this.fetchDelegationData();
     let totalDelegationAcc = 0;
-    delegationData.forEach((node: any) => {
+    delegationData?.forEach((node: any) => {
       if (node.totalDelegation) {
         totalDelegationAcc += node.totalDelegation;
       }
     });
     let totalWeightedCommission = BigNumber.from(0);
-    delegationData.forEach((node: any) => {
+    delegationData?.forEach((node: any) => {
       if (node.totalDelegation && node.currentCommission) {
         totalWeightedCommission = totalWeightedCommission.add(
           BigNumber.from(node.currentCommission).mul(
@@ -60,30 +60,28 @@ export class DelegationService {
     const delegationApi = `${this.configService.get<string>(
       'delegationAPIRoot',
     )}/validators?show_fully_delegated=true&show_my_validators=false`;
-    let delegationData;
     try {
+      const headers = {
+        'Content-Type': 'application/json',
+        'Accept-Encoding': 'gzip,deflate,compress',
+      };
       const realTimeDelegationData = await firstValueFrom(
-        this.httpService
-          .get(delegationApi)
-          .pipe(
-            catchError((error) => {
-              this.logger.error(error);
-              throw new ForbiddenException('API not available');
-            }),
-          )
-          .pipe(
-            map((res) => {
-              return res.data;
-            }),
-          ),
+        this.httpService.get(delegationApi, { headers }).pipe(
+          map((res) => {
+            return res.data;
+          }),
+          catchError((error) => {
+            this.logger.error(`Error calling Delegation API: ${error}`);
+            throw new ForbiddenException('API not available');
+          }),
+        ),
       );
-      delegationData = realTimeDelegationData;
+      return realTimeDelegationData;
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException(
-        'Fetching details unsuccessful. Please try again later.',
+        'Fetching delegation details failed. Please try again later!',
       );
     }
-    return delegationData;
   }
 }
