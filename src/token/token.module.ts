@@ -7,5 +7,6 @@ import { TokenService } from './token.service';
   imports: [ConfigModule, CacheModule.register()],
   controllers: [TokenController],
   providers: [TokenService],
+  exports: [TokenService],
 })
 export class TokenModule {}
