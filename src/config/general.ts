@@ -4,6 +4,7 @@ export default () => ({
   tokenAddress: process.env.TOKEN_ADDRESS,
   stakingAddress: process.env.STAKING_ADDRESS,
   dposAddress: process.env.MAINNET_DPOS_CONTRACT_ADDRESS,
+  deployerAddress: process.env.DEPLOYER_ADDRESS,
   delegationAPIRoot: process.env.DELEGATION_API_ROOT_URI,
   explorerRoot: process.env.EXPLORER_API_ROOT_URI,
   testnetExplorerRoot: process.env.TESTNET_EXPLORER_API_ROOT_URI,
