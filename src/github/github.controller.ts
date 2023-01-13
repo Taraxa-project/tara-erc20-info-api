@@ -12,6 +12,10 @@ import { GitHubService } from './github.service';
 export class GitHubController {
   constructor(private readonly ghService: GitHubService) {}
 
+  /**
+   * Returns the number of commits from the current month from the Taraxa-project organization
+   * @returns number of commits of current month
+   */
   @Get('commits')
   @CacheTTL(36000)
   async commitsOfCurrentMonth() {
