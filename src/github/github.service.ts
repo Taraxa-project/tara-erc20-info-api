@@ -54,8 +54,6 @@ export class GitHubService {
       let isDone = false;
       while (!isDone) {
         try {
-          const token = this.configService.get<string>('githubAccessToken');
-          this.logger.log(token);
           const since = new Date(
             new Date().getUTCFullYear(),
             new Date().getMonth(),

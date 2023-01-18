@@ -5,8 +5,10 @@ import {
   Get,
   CacheTTL,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { GitHubService } from './github.service';
 
+@ApiTags('Contributions')
 @Controller('contributions')
 @UseInterceptors(CacheInterceptor)
 export class GitHubController {

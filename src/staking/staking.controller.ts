@@ -5,9 +5,11 @@ import {
   Get,
   CacheTTL,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { TokenService } from 'src/token/token.service';
 import { DelegationService } from './delegation.service';
 
+@ApiTags('Staking')
 @Controller('staking')
 @UseInterceptors(CacheInterceptor)
 export class StakingController {

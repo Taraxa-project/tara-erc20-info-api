@@ -5,8 +5,10 @@ import {
   Get,
   CacheTTL,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { NodeService } from './node.service';
 
+@ApiTags('Validators')
 @Controller('validators')
 @UseInterceptors(CacheInterceptor)
 export class NodeController {
