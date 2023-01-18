@@ -18,17 +18,6 @@ aliases:
       shell: /bin/sh -eo pipefail
       command: |
         apk add --update openssl openssh-client sudo git bash curl docker-cli
-  - &step_install_deploy_deps
-    run:
-      name: Install deploy dependencies
-      shell: /bin/sh -eo pipefail
-      command: |
-        mkdir -p $HOME/.kube
-        echo -n "${KUBE_CONFIG}" | base64 -d > $HOME/.kube/config
-        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-        sudo mv kubectl /usr/local/bin 
-        sudo chmod +x /usr/local/bin/kubectl
   - &step_prepare_environment
     run:
       name: Prepare Environment
@@ -81,36 +70,8 @@ jobs:
               docker push ${GCP_REGISTRY}/taraxa/ecosystem-info-api-develop:${VERSION}
               docker push ${GCP_REGISTRY}/taraxa/ecosystem-info-api-develop:latest
             fi
-  deploy:
-    <<: *config
-    steps:
-      - *step_install_deps
-      - checkout
-      - *step_install_deploy_deps
-      - *step_setup_remote_docker
-      - *step_prepare_environment
-      - run:
-          name: Deploy
-          shell: /bin/bash -eo pipefail
-          command: |
-            if [ "${ENV}" == "prod" ]; then
-              export NS=platform-prod
-              export HELM_NAME=taraxa-info-api
-              export HELM_CONFIG=prod.values.yaml
-            else
-              export NS=platform-qa
-              export HELM_NAME=qa-taraxa-info-api
-              export HELM_CONFIG=values.yaml
-            fi
-
-            helm upgrade -i ${HELM_NAME} charts/taraxa-info-api/ \
-              --namespace ${NS} \
-              -f charts/taraxa-info-api/values.yaml \
-              -f charts/${HELM_CONFIG} \
-              --set image.tag=${VERSION}
 
 workflows:
   update-api:
     jobs:
       - build
-      - deploy
