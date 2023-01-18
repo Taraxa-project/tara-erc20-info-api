@@ -21,8 +21,6 @@ export class GitHubService {
     let isDone = false;
     while (!isDone) {
       try {
-        const token = this.configService.get<string>('githubAccessToken');
-        this.logger.log(token);
         returnData = await this.graphQLService.getRepoNames(endCursor);
       } catch (error) {
         this.logger.error(error);

@@ -8,7 +8,6 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { BigNumber, ethers } from 'ethers';
 import { catchError, firstValueFrom, map } from 'rxjs';
-import getWeek from 'src/utils/date';
 import { ValidatorData } from 'src/utils/types';
 import * as Dpos from './contracts/Dpos.json';
 
@@ -39,9 +38,7 @@ export class NodeService {
     } else {
       explorerRoot = this.configService.get<string>('explorerRoot');
     }
-    const explorerApi = `${explorerRoot}/api/nodes?week=${getWeek(
-      1,
-    )}&year=${new Date().getUTCFullYear()}`;
+    const explorerApi = `${explorerRoot}/api/nodes?limit=1000`;
     let activeNodeNumber = 0;
     try {
       const headers = {

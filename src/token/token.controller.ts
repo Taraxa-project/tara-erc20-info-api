@@ -28,7 +28,7 @@ export class TokenController {
    * @returns price as float
    */
   @Get('price')
-  @CacheTTL(36000)
+  @CacheTTL(30)
   async getPrice() {
     return await this.tokenService.getPrice();
   }
