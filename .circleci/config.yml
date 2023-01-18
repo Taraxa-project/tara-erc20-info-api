@@ -1,0 +1,116 @@
+version: 2.1
+
+orbs:
+  docker: circleci/docker@1.7.0
+  helm-release: taraxa/helm-release@0.1.1
+
+aliases:
+  - &config
+    docker:
+      - image: alpine:3.14
+  - &step_setup_remote_docker
+    setup_remote_docker:
+      version: 19.03.14
+      docker_layer_caching: true
+  - &step_install_deps
+    run:
+      name: Install dependencies
+      shell: /bin/sh -eo pipefail
+      command: |
+        apk add --update openssl openssh-client sudo git bash curl docker-cli
+  - &step_install_deploy_deps
+    run:
+      name: Install deploy dependencies
+      shell: /bin/sh -eo pipefail
+      command: |
+        mkdir -p $HOME/.kube
+        echo -n "${KUBE_CONFIG}" | base64 -d > $HOME/.kube/config
+        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        sudo mv kubectl /usr/local/bin 
+        sudo chmod +x /usr/local/bin/kubectl
+  - &step_prepare_environment
+    run:
+      name: Prepare Environment
+      shell: /bin/bash -eo pipefail
+      command: |
+        if [ "${CIRCLE_BRANCH}" == "develop" ]; then
+          export ENV=stage
+          echo 'export ENV=stage' >> $BASH_ENV
+        elif [ "${CIRCLE_BRANCH}" == "main" ]; then
+          export ENV=prod
+          echo 'export ENV=prod' >> $BASH_ENV
+        else
+          echo 'Unknown branch' >&2
+          exit 1
+        fi
+        echo "export GCP_REGISTRY=gcr.io/${GOOGLE_PROJECT_ID}" >> $BASH_ENV
+        echo "export VERSION=$(git rev-parse --short HEAD)" >> $BASH_ENV
+        echo "export DOCKER_BRANCH_TAG=$(echo $CIRCLE_BRANCH | tr "[:upper:]" "[:lower:]" | sed 's/[^a-zA-Z0-9_-]/-/g')" >> $BASH_ENV
+        echo "export START_TIME=$(date +%Y%m%d-%Hh%Mm%Ss)" >> $BASH_ENV
+        echo "export TIMESTAMP=$(date +%s)" >> $BASH_ENV
+
+jobs:
+  build:
+    <<: *config
+    steps:
+      - *step_install_deps
+      - checkout
+      - *step_setup_remote_docker
+      - *step_prepare_environment
+      - run:
+          name: Build image
+          shell: /bin/bash -eo pipefail
+          command: |
+            docker build -t taraxa/ecosystem-info-api:${VERSION} -f Dockerfile .
+      - run:
+          name: Tag and push images
+          shell: /bin/bash -eo pipefail
+          command: |
+            if [ "${ENV}" == "prod" ]; then
+              echo ${DOCKERHUB_PASS} | docker login -u taraxa --password-stdin
+
+              docker tag taraxa/ecosystem-info-api:${VERSION} taraxa/ecosystem-info-api:latest
+              docker push taraxa/ecosystem-info-api:${VERSION}
+              docker push taraxa/ecosystem-info-api:latest
+            else
+              echo ${GCLOUD_SERVICE_KEY} | docker login -u _json_key --password-stdin https://gcr.io
+
+              docker tag taraxa/ecosystem-info-api:${VERSION} ${GCP_REGISTRY}/taraxa/ecosystem-info-api-develop:${VERSION}
+              docker tag taraxa/ecosystem-info-api:${VERSION} ${GCP_REGISTRY}/taraxa/ecosystem-info-api-develop:latest
+              docker push ${GCP_REGISTRY}/taraxa/ecosystem-info-api-develop:${VERSION}
+              docker push ${GCP_REGISTRY}/taraxa/ecosystem-info-api-develop:latest
+            fi
+  deploy:
+    <<: *config
+    steps:
+      - *step_install_deps
+      - checkout
+      - *step_install_deploy_deps
+      - *step_setup_remote_docker
+      - *step_prepare_environment
+      - run:
+          name: Deploy
+          shell: /bin/bash -eo pipefail
+          command: |
+            if [ "${ENV}" == "prod" ]; then
+              export NS=platform-prod
+              export HELM_NAME=taraxa-info-api
+              export HELM_CONFIG=prod.values.yaml
+            else
+              export NS=platform-qa
+              export HELM_NAME=qa-taraxa-info-api
+              export HELM_CONFIG=values.yaml
+            fi
+
+            helm upgrade -i ${HELM_NAME} charts/taraxa-info-api/ \
+              --namespace ${NS} \
+              -f charts/taraxa-info-api/values.yaml \
+              -f charts/${HELM_CONFIG} \
+              --set image.tag=${VERSION}
+
+workflows:
+  update-api:
+    jobs:
+      - build
+      - deploy
