@@ -42,6 +42,10 @@ aliases:
 jobs:
   build:
     <<: *config
+    context:
+      - TARAXA
+      - DOCKERHUB
+      - GCR
     steps:
       - *step_install_deps
       - checkout
