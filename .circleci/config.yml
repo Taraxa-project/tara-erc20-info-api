@@ -42,10 +42,6 @@ aliases:
 jobs:
   build:
     <<: *config
-    context:
-      - TARAXA
-      - DOCKERHUB
-      - GCR
     steps:
       - *step_install_deps
       - checkout
@@ -78,7 +74,11 @@ jobs:
 workflows:
   update-api:
     jobs:
-      - build
+      - build:
+          context:
+            - TARAXA
+            - DOCKERHUB
+            - GCR
       - helm-release/chart-publish:
           charts-dir: charts
           chart-name: taraxa-info-api
