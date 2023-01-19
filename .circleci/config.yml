@@ -51,7 +51,7 @@ jobs:
           name: Build image
           shell: /bin/bash -eo pipefail
           command: |
-            docker build -t taraxa/ecosystem-info-api:${VERSION} -f Dockerfile .
+            docker build -t taraxa/taraxa-info-api:${VERSION} -f Dockerfile .
       - run:
           name: Tag and push images
           shell: /bin/bash -eo pipefail
@@ -59,17 +59,22 @@ jobs:
             if [ "${ENV}" == "prod" ]; then
               echo ${DOCKERHUB_PASS} | docker login -u taraxa --password-stdin
 
-              docker tag taraxa/ecosystem-info-api:${VERSION} taraxa/ecosystem-info-api:latest
-              docker push taraxa/ecosystem-info-api:${VERSION}
-              docker push taraxa/ecosystem-info-api:latest
+              docker tag taraxa/taraxa-info-api:${VERSION} taraxa/taraxa-info-api:latest
+              docker push taraxa/taraxa-info-api:${VERSION}
+              docker push taraxa/taraxa-info-api:latest
             else
               echo ${GCLOUD_SERVICE_KEY} | docker login -u _json_key --password-stdin https://gcr.io
 
-              docker tag taraxa/ecosystem-info-api:${VERSION} ${GCP_REGISTRY}/taraxa/ecosystem-info-api-develop:${VERSION}
-              docker tag taraxa/ecosystem-info-api:${VERSION} ${GCP_REGISTRY}/taraxa/ecosystem-info-api-develop:latest
-              docker push ${GCP_REGISTRY}/taraxa/ecosystem-info-api-develop:${VERSION}
-              docker push ${GCP_REGISTRY}/taraxa/ecosystem-info-api-develop:latest
+              docker tag taraxa/taraxa-info-api:${VERSION} ${GCP_REGISTRY}/taraxa/taraxa-info-api-develop:${VERSION}
+              docker tag taraxa/taraxa-info-api:${VERSION} ${GCP_REGISTRY}/taraxa/taraxa-info-api-develop:latest
+              docker push ${GCP_REGISTRY}/taraxa/taraxa-info-api-develop:${VERSION}
+              docker push ${GCP_REGISTRY}/taraxa/taraxa-info-api-develop:latest
             fi
+
+workflows:
+  update-api:
+    jobs:
+      - build
       - helm-release/chart-publish:
           charts-dir: charts
           chart-name: taraxa-info-api
@@ -82,8 +87,3 @@ jobs:
             branches:
               only:
                 - main
-
-workflows:
-  update-api:
-    jobs:
-      - build
