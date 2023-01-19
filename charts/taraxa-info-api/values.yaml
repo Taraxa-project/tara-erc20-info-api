@@ -5,8 +5,6 @@ app:
   component: api
 
   environment: default
-  provider: https://mainnet.infura.io/v3/xxx
-  githubToken: xxxxxxxxx
   tokenAddress: 0xf001937650bb4f62b57521824b2c20f5b91bea05
   taraProvider: https://rpc.mainnet.taraxa.io/
   stakingAddress: 0x7Af59Ea121a8Da8e49d2d44856feB7761561995b
