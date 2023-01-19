@@ -11,7 +11,6 @@ app:
   deployerAddress: 0x723304D1357A2334FCf902Aa3d232f5139080A1b
   taraDposAddress: 0x00000000000000000000000000000000000000fe
   mainnetDelegationUri: https://api-delegation.community.taraxa.io
-  testnetDelegationUri: https://api-delegation.qa.community.taraxa.io
   coingeckoUri: https://api.coingecko.com/api/v3/simple/price?ids=taraxa&vs_currencies=usd
   testnetExplorerUri: https://explorer.testnet.taraxa.io
   mainnetExplorerUri: https://explorer.mainnet.taraxa.io
