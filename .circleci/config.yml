@@ -80,6 +80,19 @@ workflows:
             - DOCKERHUB
             - GCR
       - helm-release/chart-publish:
+          develop: true
+          charts-dir: charts
+          chart-name: taraxa-info-api
+          chartmuseum-url: https://charts.gcp.taraxa.io
+          chartmuseum-username: HELM_REPO_USERNAME
+          chartmuseum-password: HELM_REPO_PASSWORD
+          context:
+            - CHARTSREPO
+          filters:
+            branches:
+              only:
+                - develop
+      - helm-release/chart-publish:
           charts-dir: charts
           chart-name: taraxa-info-api
           chartmuseum-url: https://charts.gcp.taraxa.io
