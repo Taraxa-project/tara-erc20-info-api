@@ -93,6 +93,7 @@ workflows:
               only:
                 - develop
       - helm-release/chart-publish:
+          develop: true
           charts-dir: charts
           chart-name: taraxa-info-api
           chartmuseum-url: https://charts.gcp.taraxa.io
