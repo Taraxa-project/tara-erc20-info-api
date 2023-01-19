@@ -70,6 +70,18 @@ jobs:
               docker push ${GCP_REGISTRY}/taraxa/ecosystem-info-api-develop:${VERSION}
               docker push ${GCP_REGISTRY}/taraxa/ecosystem-info-api-develop:latest
             fi
+      - helm-release/chart-publish:
+          charts-dir: charts
+          chart-name: taraxa-info-api
+          chartmuseum-url: https://charts.gcp.taraxa.io
+          chartmuseum-username: HELM_REPO_USERNAME
+          chartmuseum-password: HELM_REPO_PASSWORD
+          context:
+            - CHARTSREPO
+          filters:
+            branches:
+              only:
+                - main
 
 workflows:
   update-api:
