@@ -11,4 +11,6 @@ export default () => ({
   coinGeckoTaraxaApi: process.env.COINGECKO_API_TARAXA_URI,
   githubAccessToken: process.env.GITHUB_ACCESS_TOKEN,
   graphQLGitHubURI: 'https://api.github.com/graphql',
+  redisHost: process.env.REDIS_HOST,
+  redisPort: process.env.REDIS_PORT,
 });
