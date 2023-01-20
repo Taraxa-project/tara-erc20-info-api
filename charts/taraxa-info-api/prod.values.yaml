@@ -9,6 +9,8 @@ app:
   coingeckoUri: https://api.coingecko.com/api/v3/simple/price?ids=taraxa&vs_currencies=usd
   testnetExplorerUri: https://explorer.testnet.taraxa.io
   mainnetExplorerUri: https://explorer.mainnet.taraxa.io
+  redisHost: 10.39.114.21
+  redisPort: 6379
 
 image:
   tag: "latest"

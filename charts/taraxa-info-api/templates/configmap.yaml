@@ -13,4 +13,5 @@ data:
   DELEGATION_API_ROOT_URI: {{ .Values.app.mainnetDelegationUri | quote }}
   COINGECKO_API_TARAXA_URI: {{ .Values.app.coingeckoUri | quote }}
   TESTNET_EXPLORER_API_ROOT_URI: {{ .Values.app.testnetExplorerUri | quote }}
-  EXPLORER_API_ROOT_URI: {{ .Values.app.mainnetExplorerUri | quote }}
+  EXPLORER_API_ROOT_URI: {{ .Values.app.redisHost | quote }}
+  REDIS_HOST: {{ .Values.app.redisPort | quote }}
