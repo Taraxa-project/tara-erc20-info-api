@@ -62,7 +62,7 @@ export class TokenController {
    * @returns circulating supply in ETH
    */
   @Get('totalCirculating')
-  @CacheTTL(36000)
+  @CacheTTL(30)
   async totalInCirculation() {
     return await this.tokenService.totalCirculation();
   }
@@ -80,7 +80,7 @@ export class TokenController {
    * @returns market cap in 8-precision decimals as float
    */
   @Get('mktCap')
-  @CacheTTL(36000)
+  @CacheTTL(30)
   async mktCap() {
     return await this.tokenService.mktCap();
   }
