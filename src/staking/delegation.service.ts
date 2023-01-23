@@ -49,10 +49,12 @@ export class DelegationService {
         );
       }
     });
-    const weightedAverage = totalWeightedCommission.div(totalDelegationAcc);
+    const weightedAverage =
+      parseFloat(totalWeightedCommission.toString()) /
+      parseFloat(totalDelegationAcc.toString());
     return {
       totalDelegated: totalDelegationAcc,
-      averageWeightedCommission: weightedAverage.toString(),
+      averageWeightedCommission: weightedAverage,
     };
   }
 
