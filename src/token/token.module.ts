@@ -19,6 +19,9 @@ import { TokenService } from './token.service';
               host: configService.get<string>('redisHost'),
               port: configService.get<number>('redisPort'),
             },
+            name: `${configService.get<string>(
+              'namePrefix',
+            )}_${configService.get<string>('redisName')}`,
           }),
         } as unknown as CacheStore;
       },
