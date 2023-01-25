@@ -17,6 +17,8 @@ app:
   redisHost: 10.39.114.11
   redisPort: 6379
   serverPort: 3000
+  redisName: infocache
+  namePrefix: qa
 
 nodeSelector:
   cloud.google.com/gke-nodepool: taraxa-community-default
