@@ -16,27 +16,5 @@ async function bootstrap() {
   SwaggerModule.setup('apidocs', app, document);
 
   await app.listen(process.env.PORT || 3000);
-
-  const server = app.getHttpServer();
-
-  const router = server._events.request._router;
-
-  const existingRoutes: [] = router.stack
-    .map((routeObj) => {
-      if (routeObj.route) {
-        return {
-          route: {
-            path: routeObj.route?.path,
-            method: routeObj.route?.stack[0].method,
-          },
-        };
-      }
-    })
-    .filter((item) => item !== undefined);
-  fs.write;
-  fs.writeFileSync(
-    `${__dirname}/../src/routes.json`,
-    Buffer.from(JSON.stringify(existingRoutes)),
-  );
 }
 bootstrap();
