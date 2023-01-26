@@ -19,6 +19,7 @@ app:
   serverPort: 3000
   redisName: infocache
   namePrefix: qa
+  rootUri: https://qa.api.taraxa.io
 
 nodeSelector:
   cloud.google.com/gke-nodepool: taraxa-community-default

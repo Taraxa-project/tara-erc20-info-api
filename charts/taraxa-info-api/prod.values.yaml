@@ -13,6 +13,7 @@ app:
   redisPort: 6379
   redisName: infocache
   namePrefix: prod
+  rootUri: https://api.taraxa.io
 
 image:
   tag: "latest"
