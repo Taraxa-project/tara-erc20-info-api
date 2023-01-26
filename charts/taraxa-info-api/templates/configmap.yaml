@@ -16,5 +16,4 @@ data:
   REDIS_HOST: {{ .Values.app.redisHost | quote }}
   REDIS_PORT: {{ .Values.app.redisPort | quote }}
   REDIS_NAME: {{ .Values.app.redisName | quote }}
-  NAME_PREFIX: {{ .Values.app.namePrefix | quote }}
   ROOT_URI: {{ .Values.app.rootUri | quote }}

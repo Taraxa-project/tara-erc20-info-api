@@ -42,7 +42,7 @@ export class StakingController {
    * Returns the current avegare weighted validator commission in the ecosystem
    * @returns avegrage weighted validator commission
    */
-  @Get('AVC')
+  @Get('avc')
   @CacheTTL(36000)
   async avgValdatorCommission() {
     return (await this.delegationService.averageWeightedCommission())
@@ -53,7 +53,7 @@ export class StakingController {
    * Returns the current avegare staking validator yield in the ecosystem
    * @returns avegare staking validator yield
    */
-  @Get('ASY')
+  @Get('asy')
   @CacheTTL(36000)
   async avgStakingYeild() {
     return (
