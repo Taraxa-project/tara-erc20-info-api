@@ -44,7 +44,7 @@ export class StakingController {
    */
   @Get('avc')
   @CacheTTL(36000)
-  async avgValdatorCommission() {
+  async avgValidatorCommission() {
     return (await this.delegationService.averageWeightedCommission())
       .averageWeightedCommission;
   }
@@ -56,14 +56,6 @@ export class StakingController {
   @Get('asy')
   @CacheTTL(36000)
   async avgStakingYeild() {
-    return (
-      20 *
-      (1 -
-        Number(
-          (await this.delegationService.averageWeightedCommission())
-            .averageWeightedCommission,
-        ) /
-          100)
-    );
+    return 20 - (await this.avgValidatorCommission());
   }
 }
