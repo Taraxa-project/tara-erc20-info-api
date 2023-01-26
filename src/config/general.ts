@@ -15,4 +15,5 @@ export default () => ({
   redisPort: process.env.REDIS_PORT,
   redisName: process.env.REDIS_NAME,
   cacheNamePrefix: process.env.NAME_PREFIX,
+  apiRoot: process.env.API_ROOT_URI,
 });
