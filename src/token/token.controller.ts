@@ -28,9 +28,8 @@ export class TokenController {
    * @returns price as float
    */
   @Get('price')
-  @CacheTTL(30)
   async getPrice() {
-    return await this.tokenService.getPrice();
+    return (await this.tokenService.marketDetails()).price;
   }
   @Get('decimals')
   @CacheTTL(36000)
@@ -62,9 +61,8 @@ export class TokenController {
    * @returns circulating supply in ETH
    */
   @Get('totalCirculating')
-  @CacheTTL(36000)
   async totalInCirculation() {
-    return await this.tokenService.totalCirculation();
+    return (await this.tokenService.marketDetails()).circulatingSupply;
   }
   /**
    * Returns the current TARA stakign ratio
@@ -80,8 +78,7 @@ export class TokenController {
    * @returns market cap in 8-precision decimals as float
    */
   @Get('mktCap')
-  @CacheTTL(36000)
   async mktCap() {
-    return await this.tokenService.mktCap();
+    return (await this.tokenService.marketDetails()).marketCap;
   }
 }

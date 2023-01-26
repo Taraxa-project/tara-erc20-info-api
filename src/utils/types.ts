@@ -19,3 +19,9 @@ export interface ValidatorData {
   account: string;
   info: ValidatorBasicInfo;
 }
+
+export interface MarketDetails {
+  price: number;
+  circulatingSupply: number;
+  marketCap: number;
+}

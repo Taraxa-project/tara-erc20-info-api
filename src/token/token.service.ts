@@ -1,5 +1,7 @@
 import {
+  CACHE_MANAGER,
   ForbiddenException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -10,6 +12,8 @@ import { BigNumber } from '@ethersproject/bignumber';
 import * as Tara from './contracts/Tara.json';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, catchError, map } from 'rxjs';
+import { Cache } from 'cache-manager';
+import { MarketDetails } from 'src/utils/types';
 
 @Injectable()
 export class TokenService {
@@ -20,6 +24,7 @@ export class TokenService {
   constructor(
     private configService: ConfigService,
     private readonly httpService: HttpService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {
     this.ethersProvider = new ethers.providers.JsonRpcProvider(
       this.configService.get<string>('provider'),
@@ -104,7 +109,21 @@ export class TokenService {
       100
     );
   }
-  async mktCap() {
-    return Number(await this.totalCirculation()) * (await this.getPrice());
+  async marketDetails() {
+    const details = (await this.cacheManager.get('marketCap')) as MarketDetails;
+    if (details) {
+      return details;
+    } else {
+      const price = await this.getPrice();
+      const circulatingSupply = await this.totalCirculation();
+      const marketCap = price * circulatingSupply;
+      const marketDetails = {
+        price,
+        circulatingSupply,
+        marketCap,
+      };
+      await this.cacheManager.set('marketCap', marketDetails as any, 30);
+      return marketDetails;
+    }
   }
 }
