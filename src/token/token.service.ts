@@ -13,7 +13,7 @@ import * as Tara from './contracts/Tara.json';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, catchError, map } from 'rxjs';
 import { Cache } from 'cache-manager';
-import { MarketDetails } from 'src/utils/types';
+import { MarketDetails } from '../utils/types';
 
 @Injectable()
 export class TokenService {
