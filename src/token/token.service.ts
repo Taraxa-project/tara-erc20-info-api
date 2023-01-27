@@ -114,16 +114,23 @@ export class TokenService {
     if (details) {
       return details;
     } else {
-      const price = await this.getPrice();
-      const circulatingSupply = await this.totalCirculation();
-      const marketCap = price * circulatingSupply;
-      const marketDetails = {
-        price,
-        circulatingSupply,
-        marketCap,
-      };
-      await this.cacheManager.set('marketCap', marketDetails as any, 30);
-      return marketDetails;
+      try {
+        const price = await this.getPrice();
+        const circulatingSupply = await this.totalCirculation();
+        const marketCap = price * circulatingSupply;
+        const marketDetails = {
+          price,
+          circulatingSupply,
+          marketCap,
+        };
+        await this.cacheManager.set('marketCap', marketDetails as any, 30);
+        return marketDetails;
+      } catch (error) {
+        throw new InternalServerErrorException(
+          'Fetching market details failed. Reason: ',
+          error,
+        );
+      }
     }
   }
 }
