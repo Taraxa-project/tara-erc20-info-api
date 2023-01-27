@@ -18,13 +18,29 @@ export class StakingController {
     private readonly delegationService: DelegationService,
   ) {}
 
+  @Get()
+  async stakingData() {
+    const totalStaked = await this.tokenService.totalStaked();
+    const totalDelegated = (await this.delegationService.totalDelegated())
+      .totalDelegated;
+    const avgValidatorCommission = (
+      await this.delegationService.averageWeightedCommission()
+    ).averageWeightedCommission;
+    const avgStakingYield = 20 - (await this.avgValidatorCommission());
+    return {
+      totalStaked,
+      totalDelegated,
+      avgValidatorCommission,
+      avgStakingYield,
+    };
+  }
   /**
    * Returns the current TARA staked in the ecosystem
    * @returns staked supply in ETH
    */
   @Get('totalStake')
   @CacheTTL(36000)
-  async totalSupply() {
+  async totalStaked() {
     return await this.tokenService.totalStaked();
   }
 

@@ -133,4 +133,23 @@ export class TokenService {
       }
     }
   }
+
+  async tokenData() {
+    const marketDetails = await this.marketDetails();
+    const name = await this.getName();
+    const symbol = await this.getSymbol();
+    const decimals = await this.getDecimals();
+    const totalSupply = await this.totalSupply();
+    const totalLocked = await this.totalLocked();
+    const stakingRatio = await this.stakingRatio();
+    return {
+      name,
+      symbol,
+      decimals,
+      totalSupply,
+      totalLocked,
+      stakingRatio,
+      ...marketDetails,
+    };
+  }
 }

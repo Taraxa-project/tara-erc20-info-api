@@ -13,6 +13,12 @@ import { TokenService } from './token.service';
 @UseInterceptors(CacheInterceptor)
 export class TokenController {
   constructor(private readonly tokenService: TokenService) {}
+
+  @Get()
+  async getTokenData() {
+    return await this.tokenService.tokenData();
+  }
+
   @Get('name')
   @CacheTTL(36000)
   async getName() {
