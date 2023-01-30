@@ -13,5 +13,6 @@ export default () => ({
   graphQLGitHubURI: 'https://api.github.com/graphql',
   redisHost: process.env.REDIS_HOST,
   redisPort: process.env.REDIS_PORT,
+  redisPassword: process.env.REDIS_PASSWORD,
   redisName: process.env.REDIS_NAME,
 });

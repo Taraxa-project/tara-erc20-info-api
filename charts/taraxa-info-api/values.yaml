@@ -17,6 +17,7 @@ app:
   redisHost: 10.39.114.11
   redisPort: 6379
   serverPort: 3000
+  redisPassword: pass
   redisName: infocache
 
 nodeSelector:

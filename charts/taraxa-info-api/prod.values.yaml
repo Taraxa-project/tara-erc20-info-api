@@ -11,6 +11,7 @@ app:
   mainnetExplorerUri: https://explorer.mainnet.taraxa.io
   redisHost: 10.39.114.21
   redisPort: 6379
+  redisPassword: pass
   redisName: infocache
 
 image:
