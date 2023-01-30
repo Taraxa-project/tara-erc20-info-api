@@ -14,6 +14,20 @@ import { NodeService } from './node.service';
 export class NodeController {
   constructor(private readonly nodeService: NodeService) {}
 
+  @Get()
+  async validatorData() {
+    const activeMainnet = (await this.nodeService.noActiveValidators())
+      .totalActive;
+    const activeTestnet = (await this.nodeService.noActiveValidators(true))
+      .totalActive;
+    const cumulativeCommission = await this.nodeService.cumulativeCommisson();
+    return {
+      activeMainnet,
+      activeTestnet,
+      cumulativeCommission,
+    };
+  }
+
   /**
    * Returns the active validators in the past week for the Taraxa Mainnet
    * @returns active validator amount

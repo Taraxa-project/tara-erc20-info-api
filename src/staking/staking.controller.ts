@@ -18,13 +18,29 @@ export class StakingController {
     private readonly delegationService: DelegationService,
   ) {}
 
+  @Get()
+  async stakingData() {
+    const totalStaked = await this.tokenService.totalStaked();
+    const totalDelegated = (await this.delegationService.totalDelegated())
+      .totalDelegated;
+    const avgValidatorCommission = (
+      await this.delegationService.averageWeightedCommission()
+    ).averageWeightedCommission;
+    const avgStakingYield = 20 - (await this.avgValidatorCommission());
+    return {
+      totalStaked,
+      totalDelegated,
+      avgValidatorCommission,
+      avgStakingYield,
+    };
+  }
   /**
    * Returns the current TARA staked in the ecosystem
    * @returns staked supply in ETH
    */
   @Get('totalStake')
   @CacheTTL(36000)
-  async totalSupply() {
+  async totalStaked() {
     return await this.tokenService.totalStaked();
   }
 
@@ -42,7 +58,7 @@ export class StakingController {
    * Returns the current avegare weighted validator commission in the ecosystem
    * @returns avegrage weighted validator commission
    */
-  @Get('AVC')
+  @Get('avc')
   @CacheTTL(36000)
   async avgValidatorCommission() {
     return (await this.delegationService.averageWeightedCommission())
@@ -53,7 +69,7 @@ export class StakingController {
    * Returns the current avegare staking validator yield in the ecosystem
    * @returns avegare staking validator yield
    */
-  @Get('ASY')
+  @Get('asy')
   @CacheTTL(36000)
   async avgStakingYeild() {
     return 20 - (await this.avgValidatorCommission());

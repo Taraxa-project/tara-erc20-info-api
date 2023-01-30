@@ -1,5 +1,5 @@
 import { HttpModule } from '@nestjs/axios';
-import { Module, CacheModule } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TokenModule } from 'src/token/token.module';
 import { DelegationService } from './delegation.service';
