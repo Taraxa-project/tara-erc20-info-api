@@ -4,7 +4,7 @@ ARG NODE_ENV=prod
 
 RUN apk --no-cache add --update \
 	--virtual .build_deps \
-	build-base git python
+	build-base git python3
 
 WORKDIR /usr/src/app
 
