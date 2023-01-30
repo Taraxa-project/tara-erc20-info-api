@@ -397,5 +397,3 @@ Temporary Items
 .env
 dist
 /charts/taraxa-info-api/prod.secret.values.yaml
-
-src/routes.json
