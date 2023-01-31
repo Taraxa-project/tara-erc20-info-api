@@ -25,7 +25,6 @@ import { TokenModule } from './token/token.module';
               host: configService.get<string>('redisHost'),
               port: configService.get<number>('redisPort'),
             },
-            name: `${configService.get<string>('redisName')}`,
             password: configService.get<string>('redisPassword'),
           }),
         } as unknown as CacheStore;

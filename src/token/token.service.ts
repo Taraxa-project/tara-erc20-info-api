@@ -20,7 +20,7 @@ export class TokenService {
   private readonly logger = new Logger(TokenService.name);
   private ethersProvider: ethers.providers.JsonRpcProvider;
   private tokenContract: ethers.Contract;
-
+  private redisName: string;
   constructor(
     private configService: ConfigService,
     private readonly httpService: HttpService,
@@ -31,10 +31,11 @@ export class TokenService {
     );
 
     this.tokenContract = new ethers.Contract(
-      this.configService.get<string>('tokenAddress'),
+      `${this.configService.get<string>('tokenAddress')}`,
       Tara,
       this.ethersProvider,
     );
+    this.redisName = `${this.configService.get('redisName')}`;
   }
   async getName() {
     return await this.tokenContract.name();
@@ -55,7 +56,7 @@ export class TokenService {
         'Accept-Encoding': 'gzip,deflate,compress',
       };
       const realTimePriceData = await firstValueFrom(
-        this.httpService.get(taraDetailsCG, { headers }).pipe(
+        this.httpService.get(`${taraDetailsCG}`, { headers }).pipe(
           map((res) => {
             return res.data;
           }),
@@ -110,7 +111,9 @@ export class TokenService {
     );
   }
   async marketDetails() {
-    const details = (await this.cacheManager.get('marketCap')) as MarketDetails;
+    const details = (await this.cacheManager.get(
+      this.redisName ? `${this.redisName}_marketCap` : 'marketCap',
+    )) as MarketDetails;
     if (details) {
       return details;
     } else {
@@ -123,7 +126,11 @@ export class TokenService {
           circulatingSupply,
           marketCap,
         };
-        await this.cacheManager.set('marketCap', marketDetails as any, 30);
+        await this.cacheManager.set(
+          this.redisName ? `${this.redisName}_marketCap` : 'marketCap',
+          marketDetails as any,
+          30,
+        );
         return marketDetails;
       } catch (error) {
         throw new InternalServerErrorException(
