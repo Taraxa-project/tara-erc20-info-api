@@ -68,19 +68,44 @@ export class GitHubService {
           );
         } catch (error) {
           this.logger.error(error);
+          isDone = true;
           throw new InternalServerErrorException(
             'Fetching details unsuccessful. Please try again later.',
           );
         }
-        returnData.repository.refs.edges.forEach((edge) => {
-          if (!edge.node.name?.includes('dependabot')) {
-            totalCommits += Number(edge.node.target.history.totalCount || 0);
+        if (returnData) {
+          let countedHashes: string[] = [];
+          returnData.repository.refs.edges.forEach((edge) => {
+            if (!edge.node.name?.includes('dependabot')) {
+              if (Number(edge.node.target.history.totalCount || 0) > 0) {
+                this.logger.log(
+                  `Counted ${Number(
+                    edge.node.target.history.totalCount || 0,
+                  )} for repo ${repo} on branch ${edge.node.name}`,
+                );
+                const abbreviatedCommitOids =
+                  edge.node.target.history.edges.map(
+                    (edge) => edge.node.abbreviatedOid,
+                  );
+                const commonCommits = abbreviatedCommitOids.filter((element) =>
+                  countedHashes.includes(element),
+                ).length;
+                this.logger.debug(
+                  `Counted ${commonCommits} already counted commits in branch ${edge.node.name} for repo ${repo}`,
+                );
+                countedHashes.push(...(abbreviatedCommitOids as string[]));
+                countedHashes = Array.from(new Set(countedHashes));
+                totalCommits +=
+                  Number(edge.node.target.history.totalCount || 0) -
+                  commonCommits;
+              }
+            }
+          });
+          if (returnData.repository.refs.pageInfo.hasNextPage === true) {
+            endCursor = returnData.repository.refs.pageInfo.endCursor;
+          } else {
+            isDone = true;
           }
-        });
-        if (returnData.repository.refs.pageInfo.hasNextPage === true) {
-          endCursor = returnData.repository.refs.pageInfo.endCursor;
-        } else {
-          isDone = true;
         }
       }
     }

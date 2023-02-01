@@ -61,6 +61,11 @@ export class GraphQLService {
                       id
                       history(first: 100, since: $since) {
                         totalCount
+                        edges {
+                          node {
+                            abbreviatedOid
+                          }
+                        }
                       }
                     }
                   }
