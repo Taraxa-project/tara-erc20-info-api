@@ -6,6 +6,11 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { GraphQLService } from './graphql.connector.service';
 
+interface CommitData {
+  oid: string;
+  message: string;
+}
+
 @Injectable()
 export class GitHubService {
   private readonly logger = new Logger(GitHubService.name);
@@ -17,7 +22,7 @@ export class GitHubService {
   async getRepoNames() {
     let returnData;
     let endCursor;
-    const repoNames = [];
+    const repoNames = [] as string[];
     let isDone = false;
     while (!isDone) {
       try {
@@ -45,6 +50,7 @@ export class GitHubService {
   async commitsOfThisMonth() {
     const repoNames = await this.getRepoNames();
     let totalCommits = 0;
+    let globalCommitData: CommitData[] = [];
     for (const repo of repoNames) {
       this.logger.warn(`Scanning commits for repo ${repo}`);
       let returnData;
@@ -61,9 +67,19 @@ export class GitHubService {
             0,
             0,
           );
+          const before = new Date(
+            new Date().getUTCFullYear(),
+            new Date().getMonth(),
+            1,
+            0,
+            0,
+            0,
+            0,
+          );
           returnData = await this.graphQLService.getRepoCommitsSince(
             repo,
             since,
+            before,
             endCursor,
           );
         } catch (error) {
@@ -74,33 +90,44 @@ export class GitHubService {
           );
         }
         if (returnData) {
-          let countedHashes: string[] = [];
+          let countedCommitData: CommitData[] = [];
           returnData.repository.refs.edges.forEach((edge) => {
+            this.logger.debug(`Scanning branch ${edge.node.name}`);
             if (!edge.node.name?.includes('dependabot')) {
               if (Number(edge.node.target.history.totalCount || 0) > 0) {
-                this.logger.log(
-                  `Counted ${Number(
-                    edge.node.target.history.totalCount || 0,
-                  )} for repo ${repo} on branch ${edge.node.name}`,
-                );
-                const abbreviatedCommitOids =
-                  edge.node.target.history.edges.map(
-                    (edge) => edge.node.abbreviatedOid,
+                const commitHistory = [] as CommitData[];
+                edge.node.target.history.edges.forEach((edge) => {
+                  commitHistory.push({
+                    oid: edge.node.oid,
+                    message: edge.node.message,
+                  });
+                });
+                // count unique merge commits by OID
+                const duplicateOrMergeCommits =
+                  edge.node.target.history.edges.filter(
+                    (edge) =>
+                      countedCommitData.filter(
+                        (data) => data.oid === edge.node.oid,
+                      ).length !== 0 ||
+                      countedCommitData.filter(
+                        (data) => data.message === edge.node.message,
+                      ).length !== 0 ||
+                      globalCommitData.filter(
+                        (data) => data.oid === edge.node.oid,
+                      ).length !== 0 ||
+                      edge.node.message.toLowerCase().includes('merge'),
                   );
-                const commonCommits = abbreviatedCommitOids.filter((element) =>
-                  countedHashes.includes(element),
-                ).length;
-                this.logger.debug(
-                  `Counted ${commonCommits} already counted commits in branch ${edge.node.name} for repo ${repo}`,
-                );
-                countedHashes.push(...(abbreviatedCommitOids as string[]));
-                countedHashes = Array.from(new Set(countedHashes));
+                countedCommitData.push(...commitHistory);
+                countedCommitData = Array.from(new Set(countedCommitData));
                 totalCommits +=
                   Number(edge.node.target.history.totalCount || 0) -
-                  commonCommits;
+                  duplicateOrMergeCommits.length;
               }
             }
           });
+          globalCommitData = Array.from(
+            new Set(globalCommitData.concat(countedCommitData)),
+          );
           if (returnData.repository.refs.pageInfo.hasNextPage === true) {
             endCursor = returnData.repository.refs.pageInfo.endCursor;
           } else {

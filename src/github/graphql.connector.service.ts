@@ -40,6 +40,7 @@ export class GraphQLService {
   public async getRepoCommitsSince(
     repoName: string,
     since: Date,
+    before: Date,
     endCursor?: string,
   ): Promise<any> {
     return await this.graphQLClient.request(
@@ -48,6 +49,7 @@ export class GraphQLService {
           $login: String!
           $name: String!
           $since: GitTimestamp!
+          $until: GitTimestamp!
           $endCursorRefs: String
         ) {
           repository(owner: $login, name: $name) {
@@ -59,11 +61,12 @@ export class GraphQLService {
                   target {
                     ... on Commit {
                       id
-                      history(first: 100, since: $since) {
+                      history(first: 100, since: $since, until: $until) {
                         totalCount
                         edges {
                           node {
-                            abbreviatedOid
+                            oid
+                            message
                           }
                         }
                       }
@@ -84,6 +87,7 @@ export class GraphQLService {
         name: repoName,
         endCursorRefs: endCursor,
         since: since.toISOString(),
+        until: before.toISOString(),
       },
     );
   }
