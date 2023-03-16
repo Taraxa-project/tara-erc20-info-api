@@ -32,13 +32,13 @@ export class NodeService {
   }
 
   async noActiveValidators(testnet?: boolean) {
-    let explorerRoot;
+    let indexerRoot: string;
     if (testnet) {
-      explorerRoot = this.configService.get<string>('testnetExplorerRoot');
+      indexerRoot = this.configService.get<string>('testnetIndexerRoot');
     } else {
-      explorerRoot = this.configService.get<string>('explorerRoot');
+      indexerRoot = this.configService.get<string>('indexerRoot');
     }
-    const explorerApi = `${explorerRoot}/api/nodes?limit=1000`;
+    const explorerApi = `${indexerRoot}/validators?start=0&limit=100`;
     let activeNodeNumber = 0;
     try {
       const headers = {
