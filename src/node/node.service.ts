@@ -34,9 +34,9 @@ export class NodeService {
   async noActiveValidators(testnet?: boolean) {
     let indexerRoot: string;
     if (testnet) {
-      indexerRoot = this.configService.get<string>('testnetIndexerRoot');
+      indexerRoot = this.configService.get<string>('testnetIndexerRootUrl');
     } else {
-      indexerRoot = this.configService.get<string>('indexerRoot');
+      indexerRoot = this.configService.get<string>('mainnetIndexerRootUrl');
     }
     const explorerApi = `${indexerRoot}/validators?start=0&limit=100`;
     let activeNodeNumber = 0;
