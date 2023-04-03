@@ -4,6 +4,7 @@ import {
   CacheInterceptor,
   Get,
   CacheTTL,
+  CacheKey,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { TokenService } from './token.service';
@@ -15,6 +16,8 @@ export class TokenController {
   constructor(private readonly tokenService: TokenService) {}
 
   @Get()
+  @CacheTTL(30)
+  @CacheKey('marketDetails')
   async getTokenData() {
     return await this.tokenService.tokenData();
   }
@@ -34,6 +37,8 @@ export class TokenController {
    * @returns price as float
    */
   @Get('price')
+  @CacheTTL(30)
+  @CacheKey('price')
   async getPrice() {
     return (await this.tokenService.marketDetails()).price;
   }

@@ -4,6 +4,7 @@ import {
   CacheInterceptor,
   Get,
   CacheTTL,
+  CacheKey,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { TokenService } from 'src/token/token.service';
@@ -19,6 +20,8 @@ export class StakingController {
   ) {}
 
   @Get()
+  @CacheTTL(30)
+  @CacheKey('staking')
   async stakingData() {
     const totalStaked = await this.tokenService.totalStaked();
     const totalDelegated = (await this.delegationService.totalDelegated())

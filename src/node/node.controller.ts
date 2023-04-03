@@ -4,6 +4,7 @@ import {
   CacheInterceptor,
   Get,
   CacheTTL,
+  CacheKey,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { NodeService } from './node.service';
@@ -15,6 +16,8 @@ export class NodeController {
   constructor(private readonly nodeService: NodeService) {}
 
   @Get()
+  @CacheTTL(30)
+  @CacheKey('validators')
   async validatorData() {
     const activeMainnet = (await this.nodeService.noActiveValidators())
       .totalActive;

@@ -48,6 +48,10 @@ export class TokenService {
     return decimals.toString();
   }
   async getPrice() {
+    const price = (await this.cacheManager.get('price')) as number;
+    if (price) {
+      return price;
+    }
     const taraDetailsCG = this.configService.get<string>('coinGeckoTaraxaApi');
     let priceDetails;
     try {
