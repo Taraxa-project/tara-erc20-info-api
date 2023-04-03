@@ -7,6 +7,7 @@ data:
   TOKEN_ADDRESS: {{ .Values.app.tokenAddress | quote }}
   NODE_ENV: {{ .Values.app.environment | quote }}
   TARA_PROVIDER: {{ .Values.app.taraProvider | quote }}
+  PROVIDER: {{ .Values.app.provider | quote }}
   STAKING_ADDRESS: {{ .Values.app.stakingAddress | quote }}
   DEPLOYER_ADDRESS: {{ .Values.app.deployerAddress | quote }}
   MAINNET_DPOS_CONTRACT_ADDRESS: {{ .Values.app.taraDposAddress | quote }}
