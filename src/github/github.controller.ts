@@ -1,7 +1,5 @@
 import {
   Controller,
-  UseInterceptors,
-  CacheInterceptor,
   Get,
   CacheTTL,
 } from '@nestjs/common';
@@ -10,7 +8,6 @@ import { GitHubService } from './github.service';
 
 @ApiTags('Contributions')
 @Controller('contributions')
-@UseInterceptors(CacheInterceptor)
 export class GitHubController {
   constructor(private readonly ghService: GitHubService) {}
 

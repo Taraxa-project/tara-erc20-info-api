@@ -6,7 +6,7 @@ import { DelegationService } from './delegation.service';
 import { StakingController } from './staking.controller';
 
 @Module({
-  imports: [ConfigModule, HttpModule, TokenModule, CacheModule.register()],
+  imports: [ConfigModule, TokenModule, CacheModule.register()],
   controllers: [StakingController],
   providers: [DelegationService],
 })

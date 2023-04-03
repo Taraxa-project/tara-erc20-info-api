@@ -1,7 +1,5 @@
 import {
   Controller,
-  UseInterceptors,
-  CacheInterceptor,
   Get,
   CacheTTL,
 } from '@nestjs/common';
@@ -10,7 +8,6 @@ import { TokenService } from './token.service';
 
 @ApiTags('Token')
 @Controller('token')
-@UseInterceptors(CacheInterceptor)
 export class TokenController {
   constructor(private readonly tokenService: TokenService) {}
 
@@ -21,26 +18,30 @@ export class TokenController {
 
   @Get('name')
   @CacheTTL(36000)
-  async getName() {
-    return await this.tokenService.getName();
+  getName() {
+    return this.tokenService.getName();
   }
+
   @Get('symbol')
   @CacheTTL(36000)
-  async getSymbol() {
-    return await this.tokenService.getSymbol();
+  getSymbol() {
+    return this.tokenService.getSymbol();
   }
+
+  @Get('decimals')
+  @CacheTTL(36000)
+  getDecimals() {
+    return this.tokenService.getDecimals();
+  }
+
   /**
    * Returns the current TARA price
    * @returns price as float
    */
   @Get('price')
+  @CacheTTL(30)
   async getPrice() {
-    return (await this.tokenService.marketDetails()).price;
-  }
-  @Get('decimals')
-  @CacheTTL(36000)
-  async getDecimals() {
-    return await this.tokenService.getDecimals();
+    return (await this.tokenService.getPrice());
   }
 
   /**

@@ -737,19 +737,6 @@
     "@types/connect" "*"
     "@types/node" "*"
 
-"@types/cache-manager-redis-store@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@types/cache-manager-redis-store/-/cache-manager-redis-store-2.0.1.tgz#42cf1400a6dbf42d06fbcbd82e04b0a44856e50a"
-  integrity sha512-8QuccvcPieh1xM/5kReE76SfdcIdEB0ePc+54ah/NBuK2eG+6O50SX4WKoJX81UxGdW3sh/WlDaDNqjnqxWNsA==
-  dependencies:
-    "@types/cache-manager" "*"
-    "@types/redis" "^2.8.0"
-
-"@types/cache-manager@*", "@types/cache-manager@^4.0.2":
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/@types/cache-manager/-/cache-manager-4.0.2.tgz#5e76dd9e7881c23f332c2f48e5f326bd05ba9ac9"
-  integrity sha512-fT5FMdzsiSX0AbgnS5gDvHl2Nco0h5zYyjwDQy4yPC7Ww6DeGMVKPRqIZtg9HOXDV2kkc18SL1B0N8f0BecrCA==
-
 "@types/connect@*":
   version "3.4.35"
   resolved "https://registry.yarnpkg.com/@types/connect/-/connect-3.4.35.tgz#5fcf6ae445e4021d1fc2219a4873cc73a3bb2ad1"
@@ -854,13 +841,6 @@
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.4.tgz#cd667bcfdd025213aafb7ca5915a932590acdcdc"
   integrity sha512-EEhsLsD6UsDM1yFhAvy0Cjr6VwmpMWqFBCb9w07wVugF7w9nfajxLuVmngTIpgS6svCnm6Vaw+MZhoDCKnOfsw==
-
-"@types/redis@^2.8.0":
-  version "2.8.32"
-  resolved "https://registry.yarnpkg.com/@types/redis/-/redis-2.8.32.tgz#1d3430219afbee10f8cfa389dad2571a05ecfb11"
-  integrity sha512-7jkMKxcGq9p242exlbsVzuJb57KqHRhNl4dHoQu2Y5v9bCAbtIXXH0R3HleSQW4CTOqpHIYUW3t6tpUj4BVQ+w==
-  dependencies:
-    "@types/node" "*"
 
 "@types/redis@^4.0.11":
   version "4.0.11"
@@ -1360,13 +1340,13 @@ cache-manager-redis-store@^3.0.1:
   dependencies:
     redis "^4.3.1"
 
-cache-manager@^5.1.4:
-  version "5.1.4"
-  resolved "https://registry.yarnpkg.com/cache-manager/-/cache-manager-5.1.4.tgz#b3024f2127353f9f725f43ecbd184872101b6bb2"
-  integrity sha512-beXzzuboV6I0AkU25udrd8tRxFbU6c5m7+3eOdmznSVNkyKe0+uTK8EtcuhTwqc/wAYrAGl62w3s58rjKnrO6g==
+cache-manager@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/cache-manager/-/cache-manager-5.2.0.tgz#2ea6bd8cf6bfb1bd40690a1fe194327595e3bd8f"
+  integrity sha512-jwXDLtn8tQGS2vGDTKAhee2OhuX/2cgxlh97fqMnWp328VszIn064BFyKZ87dwp9GmlBFuHYfaVQehI85hFwIw==
   dependencies:
     lodash.clonedeep "^4.5.0"
-    lru-cache "^7.14.0"
+    lru-cache "~7.18.3"
 
 call-bind@^1.0.0:
   version "1.0.2"
@@ -2680,10 +2660,10 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
-lru-cache@^7.14.0:
-  version "7.14.1"
-  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.14.1.tgz#8da8d2f5f59827edb388e63e459ac23d6d408fea"
-  integrity sha512-ysxwsnTKdAx96aTRdhDOCQfDgbHnt8SK0KY8SEjO0wHinhWOFTESbjVCMPbU1uGXg/ch4lifqx0wfjOawU2+WA==
+lru-cache@~7.18.3:
+  version "7.18.3"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.18.3.tgz#f793896e0fd0e954a59dfdd82f0773808df6aa89"
+  integrity sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==
 
 luxon@^1.23.x:
   version "1.28.1"

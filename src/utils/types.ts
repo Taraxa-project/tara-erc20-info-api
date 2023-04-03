@@ -4,7 +4,7 @@ interface ValidatorBasicInfo {
   // Validator's reward from delegators rewards commission
   commission_reward: string;
   // Validator's commission - max value 1000(precision up to 0.1%)
-  commission: string;
+  commission: number;
   // Block number of last commission change
   last_commission_change: string;
   // Validator's owner account

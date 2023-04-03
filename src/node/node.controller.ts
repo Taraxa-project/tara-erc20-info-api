@@ -1,7 +1,5 @@
 import {
   Controller,
-  UseInterceptors,
-  CacheInterceptor,
   Get,
   CacheTTL,
 } from '@nestjs/common';
@@ -10,7 +8,6 @@ import { NodeService } from './node.service';
 
 @ApiTags('Validators')
 @Controller('validators')
-@UseInterceptors(CacheInterceptor)
 export class NodeController {
   constructor(private readonly nodeService: NodeService) {}
 

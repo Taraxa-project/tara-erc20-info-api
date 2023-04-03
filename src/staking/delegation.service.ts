@@ -1,89 +1,87 @@
-import { HttpService } from '@nestjs/axios';
 import {
-  ForbiddenException,
   Injectable,
-  InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { BigNumber } from 'ethers';
-import { catchError, firstValueFrom, map } from 'rxjs';
+import { BigNumber, ethers } from 'ethers';
+import { ValidatorData } from '../utils/types';
 
 @Injectable()
 export class DelegationService {
   private readonly logger = new Logger(DelegationService.name);
+  private ethersProvider: ethers.providers.JsonRpcProvider;
+  private dposContract: ethers.Contract;
   constructor(
     private configService: ConfigService,
-    private readonly httpService: HttpService,
-  ) {}
+  ) {
+    this.ethersProvider = new ethers.providers.JsonRpcProvider(
+      this.configService.get<string>('taraProvider'),
+    );
+
+    this.dposContract = new ethers.Contract(
+      this.configService.get<string>('dposAddress'),
+      [
+        'function getValidators(uint32 batch) view returns (tuple(address account, tuple(uint256 total_stake, uint256 commission_reward, uint16 commission, uint64 last_commission_change, address owner, string description, string endpoint) info)[] validators, bool end)',
+      ],
+      this.ethersProvider,
+    );
+  }
 
   async totalDelegated() {
-    const delegationData = await this.fetchDelegationData();
+    const validators = await this.fetchDelegationData();
 
-    let totalDelegationAcc = 0;
-    delegationData.forEach((node: any) => {
-      if (node.totalDelegation) {
-        totalDelegationAcc += node.totalDelegation;
-      }
-    });
-    return {
-      totalDelegated: totalDelegationAcc,
-    };
+    const total = validators.reduce((acc, validator: ValidatorData) => {
+      return acc.add(validator.info.total_stake);
+    }, BigNumber.from(0));
+
+    return total.div(BigNumber.from(10).pow(18)).toString();
   }
 
   async averageWeightedCommission() {
-    const delegationData = await this.fetchDelegationData();
-    let totalDelegationAcc = 0;
-    delegationData?.forEach((node: any) => {
-      if (node.totalDelegation) {
-        totalDelegationAcc += node.totalDelegation;
-      }
-    });
+    const validators = await this.fetchDelegationData();
+    let totalDelegation = validators.reduce((acc, validator: ValidatorData) => {
+      return acc.add(validator.info.total_stake);
+    }, BigNumber.from(0));
+
     let totalWeightedCommission = BigNumber.from(0);
-    delegationData?.forEach((node: any) => {
-      if (node.totalDelegation && node.currentCommission) {
-        totalWeightedCommission = totalWeightedCommission.add(
-          BigNumber.from(node.currentCommission).mul(
-            BigNumber.from(node.totalDelegation),
-          ),
-        );
-      }
+    validators.forEach((node: ValidatorData) => {
+      totalWeightedCommission = totalWeightedCommission.add(
+        BigNumber.from(node.info.commission).mul(
+          BigNumber.from(node.info.total_stake)
+        ),
+      );
     });
+
     const weightedAverage =
       parseFloat(totalWeightedCommission.toString()) /
-      parseFloat(totalDelegationAcc.toString());
+      parseFloat(totalDelegation.toString());
+
+
     return {
-      totalDelegated: totalDelegationAcc,
+      totalDelegated: totalDelegation,
       averageWeightedCommission: weightedAverage,
     };
   }
 
-  private async fetchDelegationData() {
-    const delegationApi = `${this.configService.get<string>(
-      'delegationAPIRoot',
-    )}/validators?show_fully_delegated=true&show_my_validators=false`;
-    try {
-      const headers = {
-        'Content-Type': 'application/json',
-        'Accept-Encoding': 'gzip,deflate,compress',
-      };
-      const realTimeDelegationData = await firstValueFrom(
-        this.httpService.get(delegationApi, { headers }).pipe(
-          map((res) => {
-            return res.data;
-          }),
-          catchError((error) => {
-            this.logger.error(`Error calling Delegation API: ${error}`);
-            throw new ForbiddenException('API not available');
-          }),
-        ),
-      );
-      return realTimeDelegationData;
-    } catch (error) {
-      this.logger.error(error);
-      throw new InternalServerErrorException(
-        'Fetching delegation details failed. Please try again later!',
-      );
+  private async fetchDelegationData(): Promise<ValidatorData[]> {
+    let validators: ValidatorData[] = [];
+    let isDone = false;
+    let index = 0;
+    while (!isDone) {
+      const res: {
+        validators: ValidatorData[];
+        end: boolean;
+      } = await this.dposContract.getValidators(index);
+      validators = validators.concat(res.validators.map(v => ({
+        account: v.account,
+        info: {
+          ...v.info,
+          commission: parseFloat(v.info.commission.toString()) / 100,
+        }
+      })));
+      isDone = res.end;
+      index++;
     }
+    return validators;
   }
 }

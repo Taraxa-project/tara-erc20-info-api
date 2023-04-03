@@ -1,7 +1,5 @@
 import {
   Controller,
-  UseInterceptors,
-  CacheInterceptor,
   Get,
   CacheTTL,
 } from '@nestjs/common';
@@ -11,7 +9,6 @@ import { DelegationService } from './delegation.service';
 
 @ApiTags('Staking')
 @Controller('staking')
-@UseInterceptors(CacheInterceptor)
 export class StakingController {
   constructor(
     private readonly tokenService: TokenService,
@@ -21,8 +18,7 @@ export class StakingController {
   @Get()
   async stakingData() {
     const totalStaked = await this.tokenService.totalStaked();
-    const totalDelegated = (await this.delegationService.totalDelegated())
-      .totalDelegated;
+    const totalDelegated = await this.delegationService.totalDelegated();
     const avgValidatorCommission = (
       await this.delegationService.averageWeightedCommission()
     ).averageWeightedCommission;
@@ -51,7 +47,7 @@ export class StakingController {
   @Get('totalDelegated')
   @CacheTTL(36000)
   async totalDelegated() {
-    return (await this.delegationService.totalDelegated()).totalDelegated;
+    return await this.delegationService.totalDelegated();
   }
 
   /**

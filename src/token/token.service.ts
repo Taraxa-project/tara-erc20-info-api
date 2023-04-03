@@ -9,7 +9,6 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ethers } from 'ethers';
 import { BigNumber } from '@ethersproject/bignumber';
-import * as Tara from './contracts/Tara.json';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, catchError, map } from 'rxjs';
 import { Cache } from 'cache-manager';
@@ -19,7 +18,6 @@ import { MarketDetails } from '../utils/types';
 export class TokenService {
   private readonly logger = new Logger(TokenService.name);
   private ethersProvider: ethers.providers.JsonRpcProvider;
-  private tokenContract: ethers.Contract;
   private redisName: string;
   constructor(
     private configService: ConfigService,
@@ -27,25 +25,19 @@ export class TokenService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {
     this.ethersProvider = new ethers.providers.JsonRpcProvider(
-      this.configService.get<string>('provider'),
+      this.configService.get<string>('taraProvider'),
     );
 
-    this.tokenContract = new ethers.Contract(
-      `${this.configService.get<string>('tokenAddress')}`,
-      Tara,
-      this.ethersProvider,
-    );
     this.redisName = `${this.configService.get('redisName')}`;
   }
-  async getName() {
-    return await this.tokenContract.name();
+  getName() {
+    return 'Taraxa Coin';
   }
-  async getSymbol() {
-    return await this.tokenContract.symbol();
+  getSymbol() {
+    return 'TARA';
   }
-  async getDecimals() {
-    const decimals = await this.tokenContract.decimals();
-    return decimals.toString();
+  getDecimals() {
+    return '18';
   }
   async getPrice() {
     const taraDetailsCG = this.configService.get<string>('coinGeckoTaraxaApi');
@@ -76,23 +68,49 @@ export class TokenService {
     return Number(priceDetails.taraxa.usd || 0);
   }
   async totalSupply() {
-    const decimals = await this.tokenContract.decimals();
-    const totalSupply = await this.tokenContract.totalSupply();
-    return totalSupply.div(BigNumber.from(10).pow(decimals)).toString();
+    const indexerRoot = this.configService.get<string>('mainnetIndexerRootUrl');
+    const totalSupplyUrl = `${indexerRoot}/totalSupply`;
+    let totalSupply = BigNumber.from(0);
+
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        'Accept-Encoding': 'gzip,deflate,compress',
+      };
+      const response = await firstValueFrom(
+        this.httpService.get(totalSupplyUrl, { headers }).pipe(
+          map((res) => {
+            return res.data;
+          }),
+          catchError((error) => {
+            this.logger.error(error);
+            throw new ForbiddenException('API not available');
+          }),
+        ),
+      );
+      totalSupply = BigNumber.from(response);
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(
+        'Fetching details unsuccessful. Please try again later.',
+      );
+    }
+
+    return totalSupply.div(BigNumber.from(10).pow(parseInt(this.getDecimals(), 10))).toString();
   }
   async totalStaked() {
-    const stakingAddress = this.configService.get<string>('stakingAddress');
+    const stakingAddress = this.configService.get<string>('dposAddress');
     if (stakingAddress) {
-      const decimals = await this.tokenContract.decimals();
-      const totalStaked = await this.tokenContract.balanceOf(stakingAddress);
+      const decimals = parseInt(this.getDecimals(), 10);
+      const totalStaked = await this.ethersProvider.getBalance(stakingAddress);
       return totalStaked.div(BigNumber.from(10).pow(decimals)).toString();
     } else return '0';
   }
   async totalLocked() {
     const deployerAddress = this.configService.get<string>('deployerAddress');
     if (deployerAddress) {
-      const decimals = await this.tokenContract.decimals();
-      const totalLocked = await this.tokenContract.balanceOf(deployerAddress);
+      const decimals = parseInt(this.getDecimals(), 10);
+      const totalLocked = await this.ethersProvider.getBalance(deployerAddress);
       return totalLocked.div(BigNumber.from(10).pow(decimals)).toString();
     } else return '0';
   }
