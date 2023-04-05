@@ -2,6 +2,7 @@ import { CacheModule, CacheStore, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SwaggerModule } from '@nestjs/swagger';
 import { redisStore } from 'cache-manager-redis-store';
+import { BlockchainModule } from './blockchain/blockchain.module';
 import general from './config/general';
 import { GitHubModule } from './github/github.module';
 import { NodeModule } from './node/node.module';
@@ -35,6 +36,7 @@ import { TokenModule } from './token/token.module';
     StakingModule,
     NodeModule,
     GitHubModule,
+    BlockchainModule,
   ],
 })
 export class AppModule {}
