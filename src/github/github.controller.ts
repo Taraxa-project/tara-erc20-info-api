@@ -2,6 +2,8 @@ import {
   Controller,
   Get,
   CacheTTL,
+  UseInterceptors,
+  CacheInterceptor,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { GitHubService } from './github.service';
@@ -12,7 +14,6 @@ export class GitHubController {
   constructor(private readonly ghService: GitHubService) {}
 
   @Get()
-  @CacheTTL(36000)
   async contributionData() {
     const commitsThisMonth = (await this.ghService.commitsOfThisMonth())
       .totalCommits;
@@ -25,7 +26,8 @@ export class GitHubController {
    * @returns number of commits of current month
    */
   @Get('commits')
-  @CacheTTL(36000)
+  @CacheTTL(36000000)
+  @UseInterceptors(CacheInterceptor)
   async commitsOfCurrentMonth() {
     return (await this.ghService.commitsOfThisMonth()).totalCommits;
   }
