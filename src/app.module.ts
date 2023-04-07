@@ -7,6 +7,7 @@ import { GitHubModule } from './github/github.module';
 import { NodeModule } from './node/node.module';
 import { StakingModule } from './staking/staking.module';
 import { TokenModule } from './token/token.module';
+import { BlockchainModule } from './blockchain/blockchain.module';
 
 @Module({
   imports: [
