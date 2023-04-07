@@ -1,17 +1,23 @@
 import { HttpModule } from '@nestjs/axios';
 import { CacheModule, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { BlockchainModule } from 'src/blockchain/blockchain.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TokenModule } from 'src/token/token.module';
 import { DelegationService } from './delegation.service';
 import { StakingController } from './staking.controller';
+import { buildCacheConfig } from 'src/config/cacheConfig';
 
 @Module({
   imports: [
     ConfigModule,
     TokenModule,
-    CacheModule.register(),
     BlockchainModule,
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) =>
+        buildCacheConfig(configService),
+    }),
   ],
   controllers: [StakingController],
   providers: [DelegationService],

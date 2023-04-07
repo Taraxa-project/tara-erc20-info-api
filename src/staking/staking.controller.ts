@@ -2,6 +2,8 @@ import {
   Controller,
   Get,
   CacheTTL,
+  CacheInterceptor,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { TokenService } from 'src/token/token.service';
@@ -35,7 +37,8 @@ export class StakingController {
    * @returns staked supply in ETH
    */
   @Get('totalStake')
-  @CacheTTL(36000)
+  @CacheTTL(36000000)
+  @UseInterceptors(CacheInterceptor)
   async totalStaked() {
     return await this.tokenService.totalStaked();
   }
@@ -45,7 +48,8 @@ export class StakingController {
    * @returns delegated supply in ETH
    */
   @Get('totalDelegated')
-  @CacheTTL(36000)
+  @CacheTTL(36000000)
+  @UseInterceptors(CacheInterceptor)
   async totalDelegated() {
     return await this.delegationService.totalDelegated();
   }
@@ -55,7 +59,8 @@ export class StakingController {
    * @returns avegrage weighted validator commission
    */
   @Get('avc')
-  @CacheTTL(36000)
+  @CacheTTL(36000000)
+  @UseInterceptors(CacheInterceptor)
   async avgValidatorCommission() {
     return (await this.delegationService.averageWeightedCommission())
       .averageWeightedCommission;
@@ -66,7 +71,8 @@ export class StakingController {
    * @returns avegare staking validator yield
    */
   @Get('asy')
-  @CacheTTL(36000)
+  @CacheTTL(36000000)
+  @UseInterceptors(CacheInterceptor)
   async avgStakingYeild() {
     return 20 - (await this.avgValidatorCommission());
   }

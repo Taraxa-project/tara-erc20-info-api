@@ -96,7 +96,9 @@ export class TokenService {
       );
     }
 
-    return totalSupply.div(BigNumber.from(10).pow(parseInt(this.getDecimals(), 10))).toString();
+    return totalSupply
+      .div(BigNumber.from(10).pow(parseInt(this.getDecimals(), 10)))
+      .toString();
   }
   async totalStaked() {
     const stakingAddress = this.configService.get<string>('dposAddress');
@@ -129,9 +131,8 @@ export class TokenService {
     );
   }
   async marketDetails() {
-    const details = (await this.cacheManager.get(
-      this.redisName ? `${this.redisName}_marketCap` : 'marketCap',
-    )) as MarketDetails;
+    const key = this.redisName ? `${this.redisName}_marketCap` : 'marketCap';
+    const details = (await this.cacheManager.get(key)) as MarketDetails;
     if (details) {
       return details;
     } else {
@@ -144,13 +145,11 @@ export class TokenService {
           circulatingSupply,
           marketCap,
         };
-        await this.cacheManager.set(
-          this.redisName ? `${this.redisName}_marketCap` : 'marketCap',
-          marketDetails as any,
-          30,
-        );
+        await this.cacheManager.set(key, marketDetails, 30000);
+
         return marketDetails;
       } catch (error) {
+        console.error(error);
         throw new InternalServerErrorException(
           'Fetching market details failed. Reason: ',
           error,
@@ -161,9 +160,9 @@ export class TokenService {
 
   async tokenData() {
     const marketDetails = await this.marketDetails();
-    const name = await this.getName();
-    const symbol = await this.getSymbol();
-    const decimals = await this.getDecimals();
+    const name = this.getName();
+    const symbol = this.getSymbol();
+    const decimals = this.getDecimals();
     const totalSupply = await this.totalSupply();
     const totalLocked = await this.totalLocked();
     const stakingRatio = await this.stakingRatio();

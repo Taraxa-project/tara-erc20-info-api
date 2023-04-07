@@ -5,12 +5,18 @@ import { GitHubService } from './github.service';
 import { GitHubController } from './github.controller';
 import { GraphQLRequestModule } from '@golevelup/nestjs-graphql-request';
 import { GraphQLService } from './graphql.connector.service';
+import { buildCacheConfig } from 'src/config/cacheConfig';
 
 @Module({
   imports: [
     ConfigModule,
     HttpModule,
-    CacheModule.register(),
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) =>
+        buildCacheConfig(configService),
+    }),
     GraphQLRequestModule.forRootAsync(GraphQLRequestModule, {
       imports: [ConfigModule],
       inject: [ConfigService],

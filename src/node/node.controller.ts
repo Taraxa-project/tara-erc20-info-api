@@ -2,6 +2,8 @@ import {
   Controller,
   Get,
   CacheTTL,
+  CacheInterceptor,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { NodeService } from './node.service';
@@ -30,7 +32,8 @@ export class NodeController {
    * @returns active validator amount
    */
   @Get('totalActive')
-  @CacheTTL(36000)
+  @CacheTTL(36000000)
+  @UseInterceptors(CacheInterceptor)
   async totalActiveValidatorsMainnet() {
     return (await this.nodeService.noActiveValidators()).totalActive;
   }
@@ -40,7 +43,8 @@ export class NodeController {
    * @returns active validator amount
    */
   @Get('totalActiveTestnet')
-  @CacheTTL(36000)
+  @CacheTTL(36000000)
+  @UseInterceptors(CacheInterceptor)
   async totaltotalActiveValidatorsTestnet() {
     return (await this.nodeService.noActiveValidators(true)).totalActive;
   }
@@ -50,7 +54,8 @@ export class NodeController {
    * @returns cumulative commission in ETH
    */
   @Get('cumulativeCommission')
-  @CacheTTL(36000)
+  @CacheTTL(36000000)
+  @UseInterceptors(CacheInterceptor)
   async cumulativeCommission() {
     return await this.nodeService.cumulativeCommisson();
   }
