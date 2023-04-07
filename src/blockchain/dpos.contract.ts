@@ -30,15 +30,7 @@ export class DposContract {
         validators: ValidatorData[];
         end: boolean;
       } = await this.instance.getValidators(index);
-      validators = validators.concat(
-        res.validators.map((v) => ({
-          account: v.account,
-          info: {
-            ...v.info,
-            commission: parseFloat(v.info.commission.toString()) / 100,
-          },
-        })),
-      );
+      validators = validators.concat(res.validators);
       isDone = res.end;
       index++;
     }
