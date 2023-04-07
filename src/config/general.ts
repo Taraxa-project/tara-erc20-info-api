@@ -3,6 +3,7 @@ export default () => ({
   taraProvider: process.env.TARA_PROVIDER,
   tokenAddress: process.env.TOKEN_ADDRESS,
   stakingAddress: process.env.STAKING_ADDRESS,
+  foundationAddress: process.env.FOUNDATION_ADDRESS,
   dposAddress: process.env.MAINNET_DPOS_CONTRACT_ADDRESS,
   deployerAddress: process.env.DEPLOYER_ADDRESS,
   delegationAPIRoot: process.env.DELEGATION_API_ROOT_URI,

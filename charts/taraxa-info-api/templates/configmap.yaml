@@ -10,6 +10,7 @@ data:
   PROVIDER: {{ .Values.app.provider | quote }}
   STAKING_ADDRESS: {{ .Values.app.stakingAddress | quote }}
   DEPLOYER_ADDRESS: {{ .Values.app.deployerAddress | quote }}
+  FOUNDATION_ADDRESS: {{ .Values.app.foundationAddress | quote }}
   MAINNET_DPOS_CONTRACT_ADDRESS: {{ .Values.app.taraDposAddress | quote }}
   DELEGATION_API_ROOT_URI: {{ .Values.app.mainnetDelegationUri | quote }}
   COINGECKO_API_TARAXA_URI: {{ .Values.app.coingeckoUri | quote }}

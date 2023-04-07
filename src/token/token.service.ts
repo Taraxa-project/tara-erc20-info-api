@@ -100,13 +100,25 @@ export class TokenService {
       .div(BigNumber.from(10).pow(parseInt(this.getDecimals(), 10)))
       .toString();
   }
-  async totalStaked() {
-    const stakingAddress = this.configService.get<string>('dposAddress');
-    if (stakingAddress) {
-      const decimals = parseInt(this.getDecimals(), 10);
-      const totalStaked = await this.ethersProvider.getBalance(stakingAddress);
-      return totalStaked.div(BigNumber.from(10).pow(decimals)).toString();
-    } else return '0';
+  async dposBalance() {
+    const dposAddress = this.configService.get<string>('dposAddress');
+    if (!dposAddress) {
+      return '0';
+    }
+    const decimals = parseInt(this.getDecimals(), 10);
+    const dposBalance = await this.ethersProvider.getBalance(dposAddress);
+    return dposBalance.div(BigNumber.from(10).pow(decimals)).toString();
+
+  }
+  async foundationBalance() {
+    const foundationAddress = this.configService.get<string>('foundationAddress');
+    if (!foundationAddress) {
+      return '0';
+    }
+    const decimals = parseInt(this.getDecimals(), 10);
+    const foundationBalance = await this.ethersProvider.getBalance(foundationAddress);
+    return foundationBalance.div(BigNumber.from(10).pow(decimals)).toString();
+
   }
   async totalLocked() {
     const deployerAddress = this.configService.get<string>('deployerAddress');
@@ -120,12 +132,13 @@ export class TokenService {
     return (
       Number(await this.totalSupply()) -
       Number(await this.totalLocked()) -
-      Number(await this.totalStaked())
+      Number(await this.dposBalance()) -
+      Number(await this.foundationBalance())
     );
   }
   async stakingRatio() {
     return (
-      (Number(await this.totalStaked()) /
+      (Number(await this.dposBalance()) /
         (Number(await this.totalSupply()) - Number(await this.totalLocked()))) *
       100
     );
@@ -135,26 +148,26 @@ export class TokenService {
     const details = (await this.cacheManager.get(key)) as MarketDetails;
     if (details) {
       return details;
-    } else {
-      try {
-        const price = await this.getPrice();
-        const circulatingSupply = await this.totalCirculation();
-        const marketCap = price * circulatingSupply;
-        const marketDetails = {
-          price,
-          circulatingSupply,
-          marketCap,
-        };
-        await this.cacheManager.set(key, marketDetails, 30000);
+    }
 
-        return marketDetails;
-      } catch (error) {
-        console.error(error);
-        throw new InternalServerErrorException(
-          'Fetching market details failed. Reason: ',
-          error,
-        );
-      }
+    try {
+      const price = await this.getPrice();
+      const circulatingSupply = await this.totalCirculation();
+      const marketCap = price * circulatingSupply;
+      const marketDetails = {
+        price,
+        circulatingSupply,
+        marketCap,
+      };
+      await this.cacheManager.set(key, marketDetails, 30000);
+
+      return marketDetails;
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(
+        'Fetching market details failed. Reason: ',
+        error,
+      );
     }
   }
 
