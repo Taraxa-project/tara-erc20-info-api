@@ -6,16 +6,12 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { BigNumber, ethers } from 'ethers';
 import { catchError, firstValueFrom, map } from 'rxjs';
-import { DposContract } from 'src/blockchain/dpos.contract';
-import { ValidatorData } from 'src/utils/types';
 
 @Injectable()
 export class NodeService {
   private readonly logger = new Logger(NodeService.name);
   constructor(
-    private readonly dposContract: DposContract,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
   ) {}

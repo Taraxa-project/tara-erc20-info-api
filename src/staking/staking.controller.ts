@@ -11,14 +11,14 @@ import { StakingService } from './staking.service';
 @ApiTags('Staking')
 @Controller('staking')
 export class StakingController {
-  constructor(private readonly delegationService: StakingService) {}
+  constructor(private readonly stakingService: StakingService) {}
 
   @Get()
   async stakingData() {
-    const totalStaked = await this.delegationService.totalDelegated();
-    const totalDelegated = await this.delegationService.totalDelegated();
+    const totalStaked = await this.stakingService.totalDelegated();
+    const totalDelegated = await this.stakingService.totalDelegated();
     const avgValidatorCommission = (
-      await this.delegationService.averageWeightedCommission()
+      await this.stakingService.averageWeightedCommission()
     ).averageWeightedCommission.toString();
     const avgStakingYield = await this.avgStakingYield();
     return {
@@ -36,7 +36,7 @@ export class StakingController {
   @CacheTTL(36000000)
   @UseInterceptors(CacheInterceptor)
   async totalStaked() {
-    return await this.delegationService.totalDelegated();
+    return await this.stakingService.totalDelegated();
   }
 
   /**
@@ -47,7 +47,7 @@ export class StakingController {
   @CacheTTL(36000000)
   @UseInterceptors(CacheInterceptor)
   async totalDelegated() {
-    return await this.delegationService.totalDelegated();
+    return await this.stakingService.totalDelegated();
   }
 
   /**
@@ -58,7 +58,7 @@ export class StakingController {
   @CacheTTL(36000000)
   @UseInterceptors(CacheInterceptor)
   async avgValidatorCommission() {
-    return (await this.delegationService.averageWeightedCommission())
+    return (await this.stakingService.averageWeightedCommission())
       .averageWeightedCommission;
   }
 
