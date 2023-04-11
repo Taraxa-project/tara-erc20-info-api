@@ -5,7 +5,7 @@ import { ValidatorData } from '../utils/types';
 
 @Injectable()
 export class DelegationService {
-  constructor(private readonly dposContract: DposContract) { }
+  constructor(private readonly dposContract: DposContract) {}
 
   async totalDelegated() {
     const validators = await this.dposContract.fetchDelegationData();

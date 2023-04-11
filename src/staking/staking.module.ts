@@ -18,5 +18,6 @@ import { buildCacheConfig } from 'src/config/cacheConfig';
   ],
   controllers: [StakingController],
   providers: [DelegationService],
+  exports: [DelegationService],
 })
 export class StakingModule {}
