@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BigNumber } from 'ethers';
 import { DposContract } from 'src/blockchain/dpos.contract';
 import { ValidatorData } from '../utils/types';
-
+import { Decimal } from 'decimal.js';
 @Injectable()
 export class StakingService {
   constructor(private readonly dposContract: DposContract) {}
@@ -35,10 +35,10 @@ export class StakingService {
       );
     });
 
-    const weightedAverage =
-      parseFloat(totalWeightedCommission.toString()) /
-      parseFloat(totalDelegation.toString()) /
-      100;
+    const weightedAverage = new Decimal(totalWeightedCommission.toString())
+      .div(new Decimal(totalDelegation.toString()))
+      .div(new Decimal(100))
+      .toString();
 
     return {
       totalDelegated: totalDelegation,
