@@ -15,15 +15,17 @@ export class NodeController {
 
   @Get()
   async validatorData() {
-    const activeMainnet = (await this.nodeService.noActiveValidators())
-      .totalActive;
-    const activeTestnet = (await this.nodeService.noActiveValidators(true))
-      .totalActive;
+    const activeMainnet = (
+      await this.nodeService.noActiveValidators()
+    ).totalActive.toString();
+    const activeTestnet = (
+      await this.nodeService.noActiveValidators(true)
+    ).totalActive.toString();
     // const cumulativeCommission = await this.nodeService.cumulativeCommisson();
     return {
       activeMainnet,
       activeTestnet,
-      cumulativeCommission: 0,
+      cumulativeCommission: '0',
     };
   }
 
@@ -35,7 +37,7 @@ export class NodeController {
   @CacheTTL(36000000)
   @UseInterceptors(CacheInterceptor)
   async totalActiveValidatorsMainnet() {
-    return (await this.nodeService.noActiveValidators()).totalActive;
+    return (await this.nodeService.noActiveValidators()).totalActive.toString();
   }
 
   /**
@@ -46,7 +48,9 @@ export class NodeController {
   @CacheTTL(36000000)
   @UseInterceptors(CacheInterceptor)
   async totaltotalActiveValidatorsTestnet() {
-    return (await this.nodeService.noActiveValidators(true)).totalActive;
+    return (
+      await this.nodeService.noActiveValidators(true)
+    ).totalActive.toString();
   }
 
   /**
@@ -58,6 +62,6 @@ export class NodeController {
   @UseInterceptors(CacheInterceptor)
   async cumulativeCommission() {
     // return await this.nodeService.cumulativeCommisson();
-    return 0;
+    return '0';
   }
 }
