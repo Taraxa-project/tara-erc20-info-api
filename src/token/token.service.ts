@@ -13,6 +13,7 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, catchError, map } from 'rxjs';
 import { Cache } from 'cache-manager';
 import { MarketDetails } from '../utils/types';
+import { DelegationService } from 'src/staking/delegation.service';
 
 @Injectable()
 export class TokenService {
@@ -22,6 +23,7 @@ export class TokenService {
   constructor(
     private configService: ConfigService,
     private readonly httpService: HttpService,
+    private readonly delegationService: DelegationService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {
     this.ethersProvider = new ethers.providers.JsonRpcProvider(
@@ -40,6 +42,11 @@ export class TokenService {
     return '18';
   }
   async getPrice() {
+    const key = this.redisName ? `${this.redisName}_marketCap` : 'marketCap';
+    const details = (await this.cacheManager.get(key)) as MarketDetails;
+    if (details) {
+      return details.price;
+    }
     const taraDetailsCG = this.configService.get<string>('coinGeckoTaraxaApi');
     let priceDetails;
     try {
@@ -108,17 +115,18 @@ export class TokenService {
     const decimals = parseInt(this.getDecimals(), 10);
     const dposBalance = await this.ethersProvider.getBalance(dposAddress);
     return dposBalance.div(BigNumber.from(10).pow(decimals)).toString();
-
   }
   async foundationBalance() {
-    const foundationAddress = this.configService.get<string>('foundationAddress');
+    const foundationAddress =
+      this.configService.get<string>('foundationAddress');
     if (!foundationAddress) {
       return '0';
     }
     const decimals = parseInt(this.getDecimals(), 10);
-    const foundationBalance = await this.ethersProvider.getBalance(foundationAddress);
+    const foundationBalance = await this.ethersProvider.getBalance(
+      foundationAddress,
+    );
     return foundationBalance.div(BigNumber.from(10).pow(decimals)).toString();
-
   }
   async totalLocked() {
     const deployerAddress = this.configService.get<string>('deployerAddress');
@@ -138,12 +146,12 @@ export class TokenService {
   }
   async stakingRatio() {
     return (
-      (Number(await this.dposBalance()) /
+      (Number(await this.delegationService.totalDelegated()) /
         (Number(await this.totalSupply()) - Number(await this.totalLocked()))) *
       100
-    );
+    ).toString();
   }
-  async marketDetails() {
+  async marketDetails(asString?: boolean) {
     const key = this.redisName ? `${this.redisName}_marketCap` : 'marketCap';
     const details = (await this.cacheManager.get(key)) as MarketDetails;
     if (details) {
@@ -155,11 +163,13 @@ export class TokenService {
       const circulatingSupply = await this.totalCirculation();
       const marketCap = price * circulatingSupply;
       const marketDetails = {
-        price,
-        circulatingSupply,
-        marketCap,
+        price: asString ? price.toString() : price,
+        circulatingSupply: asString
+          ? circulatingSupply.toString()
+          : circulatingSupply,
+        marketCap: asString ? marketCap.toString() : marketCap,
       };
-      await this.cacheManager.set(key, marketDetails, 30000);
+      await this.cacheManager.set(key, marketDetails, 60000);
 
       return marketDetails;
     } catch (error) {
@@ -172,7 +182,7 @@ export class TokenService {
   }
 
   async tokenData() {
-    const marketDetails = await this.marketDetails();
+    const marketDetails = await this.marketDetails(true);
     const name = this.getName();
     const symbol = this.getSymbol();
     const decimals = this.getDecimals();
