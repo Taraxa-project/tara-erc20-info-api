@@ -6,12 +6,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { DelegationService } from './delegation.service';
+import { StakingService } from './staking.service';
 
 @ApiTags('Staking')
 @Controller('staking')
 export class StakingController {
-  constructor(private readonly delegationService: DelegationService) {}
+  constructor(private readonly delegationService: StakingService) {}
 
   @Get()
   async stakingData() {

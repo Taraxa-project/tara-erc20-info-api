@@ -1,7 +1,7 @@
 import { CacheModule, Module } from '@nestjs/common';
 import { BlockchainModule } from 'src/blockchain/blockchain.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { DelegationService } from './delegation.service';
+import { StakingService } from './staking.service';
 import { StakingController } from './staking.controller';
 import { buildCacheConfig } from 'src/config/cacheConfig';
 
@@ -17,7 +17,7 @@ import { buildCacheConfig } from 'src/config/cacheConfig';
     }),
   ],
   controllers: [StakingController],
-  providers: [DelegationService],
-  exports: [DelegationService],
+  providers: [StakingService],
+  exports: [StakingService],
 })
 export class StakingModule {}

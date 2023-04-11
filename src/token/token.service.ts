@@ -13,7 +13,7 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, catchError, map } from 'rxjs';
 import { Cache } from 'cache-manager';
 import { MarketDetails } from '../utils/types';
-import { DelegationService } from 'src/staking/delegation.service';
+import { StakingService } from 'src/staking/staking.service';
 
 @Injectable()
 export class TokenService {
@@ -23,7 +23,7 @@ export class TokenService {
   constructor(
     private configService: ConfigService,
     private readonly httpService: HttpService,
-    private readonly delegationService: DelegationService,
+    private readonly delegationService: StakingService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {
     this.ethersProvider = new ethers.providers.JsonRpcProvider(

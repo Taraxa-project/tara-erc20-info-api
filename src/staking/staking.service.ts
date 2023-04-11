@@ -4,7 +4,7 @@ import { DposContract } from 'src/blockchain/dpos.contract';
 import { ValidatorData } from '../utils/types';
 
 @Injectable()
-export class DelegationService {
+export class StakingService {
   constructor(private readonly dposContract: DposContract) {}
 
   async totalDelegated() {
