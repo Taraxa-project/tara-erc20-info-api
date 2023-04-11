@@ -57,14 +57,14 @@ export class NodeService {
     };
   }
 
-  async cumulativeCommisson() {
-    let cumulativeCommission = BigNumber.from(0);
-    const validators = await this.dposContract.fetchDelegationData();
-    validators.forEach((validator) => {
-      cumulativeCommission = cumulativeCommission.add(
-        BigNumber.from(validator.info.commission_reward),
-      );
-    });
-    return ethers.utils.formatEther(cumulativeCommission.toString());
-  }
+  // async cumulativeCommisson() {
+  //   let cumulativeCommission = BigNumber.from(0);
+  //   const validators = await this.dposContract.fetchDelegationData();
+  //   validators.forEach((validator) => {
+  //     cumulativeCommission = cumulativeCommission.add(
+  //       BigNumber.from(validator.info.commission_reward),
+  //     );
+  //   });
+  //   return ethers.utils.formatEther(cumulativeCommission.toString());
+  // }
 }

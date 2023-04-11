@@ -19,11 +19,11 @@ export class NodeController {
       .totalActive;
     const activeTestnet = (await this.nodeService.noActiveValidators(true))
       .totalActive;
-    const cumulativeCommission = await this.nodeService.cumulativeCommisson();
+    // const cumulativeCommission = await this.nodeService.cumulativeCommisson();
     return {
       activeMainnet,
       activeTestnet,
-      cumulativeCommission,
+      cumulativeCommission: 0,
     };
   }
 
@@ -57,6 +57,7 @@ export class NodeController {
   @CacheTTL(36000000)
   @UseInterceptors(CacheInterceptor)
   async cumulativeCommission() {
-    return await this.nodeService.cumulativeCommisson();
+    // return await this.nodeService.cumulativeCommisson();
+    return 0;
   }
 }
