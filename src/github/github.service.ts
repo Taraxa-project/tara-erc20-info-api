@@ -60,7 +60,7 @@ export class GitHubService {
         try {
           const since = new Date(
             new Date().getUTCFullYear(),
-            new Date().getMonth(),
+            new Date().getMonth() - 1,
             1,
             0,
             0,
@@ -119,9 +119,10 @@ export class GitHubService {
                   );
                 countedCommitData.push(...commitHistory);
                 countedCommitData = Array.from(new Set(countedCommitData));
-                totalCommits +=
+                const uniquieCommitsForBranch =
                   Number(edge.node.target.history.totalCount || 0) -
                   duplicateOrMergeCommits.length;
+                totalCommits += uniquieCommitsForBranch;
               }
             }
           });
