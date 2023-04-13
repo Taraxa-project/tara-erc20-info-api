@@ -13,7 +13,7 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, catchError, map } from 'rxjs';
 import { Cache } from 'cache-manager';
 import { MarketDetails } from '../utils/types';
-import { StakingService } from 'src/staking/staking.service';
+import { StakingService } from '../staking/staking.service';
 
 @Injectable()
 export class TokenService {
@@ -41,12 +41,7 @@ export class TokenService {
   getDecimals() {
     return '18';
   }
-  async getPrice() {
-    const key = this.redisName ? `${this.redisName}_marketCap` : 'marketCap';
-    const details = (await this.cacheManager.get(key)) as MarketDetails;
-    if (details) {
-      return details.price;
-    }
+  async _getPrice() {
     const taraDetailsCG = this.configService.get<string>('coinGeckoTaraxaApi');
     let priceDetails;
     try {
@@ -151,7 +146,7 @@ export class TokenService {
       100
     ).toString();
   }
-  async marketDetails(asString?: boolean) {
+  async marketDetails() {
     const key = this.redisName ? `${this.redisName}_marketCap` : 'marketCap';
     const details = (await this.cacheManager.get(key)) as MarketDetails;
     if (details) {
@@ -159,15 +154,13 @@ export class TokenService {
     }
 
     try {
-      const price = await this.getPrice();
+      const price = await this._getPrice();
       const circulatingSupply = await this.totalCirculation();
       const marketCap = price * circulatingSupply;
       const marketDetails = {
-        price: asString ? price.toString() : price,
-        circulatingSupply: asString
-          ? circulatingSupply.toString()
-          : circulatingSupply,
-        marketCap: asString ? marketCap.toString() : marketCap,
+        price,
+        circulatingSupply,
+        marketCap,
       };
       await this.cacheManager.set(key, marketDetails, 60000);
 
@@ -182,7 +175,7 @@ export class TokenService {
   }
 
   async tokenData() {
-    const marketDetails = await this.marketDetails(true);
+    const marketDetails = await this.marketDetails();
     const name = this.getName();
     const symbol = this.getSymbol();
     const decimals = this.getDecimals();
@@ -196,7 +189,9 @@ export class TokenService {
       totalSupply,
       totalLocked,
       stakingRatio,
-      ...marketDetails,
+      price: marketDetails.price.toString(),
+      circulatingSupply: marketDetails.circulatingSupply.toString(),
+      marketCap: marketDetails.marketCap.toString(),
     };
   }
 }

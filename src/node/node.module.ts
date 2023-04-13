@@ -3,12 +3,10 @@ import { Module, CacheModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NodeController } from './node.controller';
 import { NodeService } from './node.service';
-import { buildCacheConfig } from 'src/config/cacheConfig';
-import { StakingModule } from 'src/staking/staking.module';
-import { TokenModule } from 'src/token/token.module';
+import { buildCacheConfig } from '../config/cacheConfig';
+import { TokenModule } from '../token/token.module';
 @Module({
   imports: [
-    StakingModule,
     TokenModule,
     ConfigModule,
     HttpModule,

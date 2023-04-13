@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BigNumber } from 'ethers';
-import { DposContract } from 'src/blockchain/dpos.contract';
+import { DposContract } from '../blockchain/dpos.contract';
 import { ValidatorData } from '../utils/types';
 import { Decimal } from 'decimal.js';
 @Injectable()

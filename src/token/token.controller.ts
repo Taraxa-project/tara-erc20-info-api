@@ -47,7 +47,7 @@ export class TokenController {
   @CacheTTL(60000)
   @UseInterceptors(CacheInterceptor)
   async getPrice() {
-    return (await this.tokenService.getPrice()).toString();
+    return (await this.tokenService.marketDetails()).price.toString();
   }
 
   /**

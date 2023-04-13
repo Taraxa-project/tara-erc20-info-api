@@ -5,7 +5,7 @@ import { GitHubService } from './github.service';
 import { GitHubController } from './github.controller';
 import { GraphQLRequestModule } from '@golevelup/nestjs-graphql-request';
 import { GraphQLService } from './graphql.connector.service';
-import { buildCacheConfig } from 'src/config/cacheConfig';
+import { buildCacheConfig } from '../config/cacheConfig';
 
 @Module({
   imports: [
