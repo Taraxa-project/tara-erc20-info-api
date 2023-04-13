@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { NodeService } from './node.service';
-import { StakingService } from '../staking/staking.service';
 import { TokenService } from '../token/token.service';
 import { BigNumber } from 'ethers';
 
