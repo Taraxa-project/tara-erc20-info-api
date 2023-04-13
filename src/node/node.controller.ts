@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { NodeService } from './node.service';
-import { StakingService } from 'src/staking/staking.service';
-import { TokenService } from 'src/token/token.service';
+import { StakingService } from '../staking/staking.service';
+import { TokenService } from '../token/token.service';
 import { BigNumber } from 'ethers';
 
 @ApiTags('Validators')
@@ -79,7 +79,7 @@ export class NodeController {
   @CacheTTL(36000000)
   @UseInterceptors(CacheInterceptor)
   async cumulativeRewards() {
-    const INITIAL_SUPPLY = '10119799574107498232500000000';
+    const INITIAL_SUPPLY = '10000000000000000000000000000';
     const currentSupply = await this.tokenService.totalSupply();
     return BigNumber.from(currentSupply)
       .sub(BigNumber.from(INITIAL_SUPPLY).div(BigNumber.from(10).pow(18)))
