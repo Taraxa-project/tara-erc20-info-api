@@ -6,16 +6,12 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { BigNumber, ethers } from 'ethers';
 import { catchError, firstValueFrom, map } from 'rxjs';
-import { DposContract } from 'src/blockchain/dpos.contract';
-import { ValidatorData } from 'src/utils/types';
 
 @Injectable()
 export class NodeService {
   private readonly logger = new Logger(NodeService.name);
   constructor(
-    private readonly dposContract: DposContract,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
   ) {}
@@ -57,14 +53,14 @@ export class NodeService {
     };
   }
 
-  async cumulativeCommisson() {
-    let cumulativeCommission = BigNumber.from(0);
-    const validators = await this.dposContract.fetchDelegationData();
-    validators.forEach((validator) => {
-      cumulativeCommission = cumulativeCommission.add(
-        BigNumber.from(validator.info.commission_reward),
-      );
-    });
-    return ethers.utils.formatEther(cumulativeCommission.toString());
-  }
+  // async cumulativeCommisson() {
+  //   let cumulativeCommission = BigNumber.from(0);
+  //   const validators = await this.dposContract.fetchDelegationData();
+  //   validators.forEach((validator) => {
+  //     cumulativeCommission = cumulativeCommission.add(
+  //       BigNumber.from(validator.info.commission_reward),
+  //     );
+  //   });
+  //   return ethers.utils.formatEther(cumulativeCommission.toString());
+  // }
 }

@@ -3,7 +3,6 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { GraphQLService } from './graphql.connector.service';
 
 interface CommitData {
@@ -14,14 +13,11 @@ interface CommitData {
 @Injectable()
 export class GitHubService {
   private readonly logger = new Logger(GitHubService.name);
-  constructor(
-    private configService: ConfigService,
-    private readonly graphQLService: GraphQLService,
-  ) {}
+  constructor(private readonly graphQLService: GraphQLService) {}
 
   async getRepoNames() {
-    let returnData;
-    let endCursor;
+    let returnData: any;
+    let endCursor: string;
     const repoNames = [] as string[];
     let isDone = false;
     while (!isDone) {
@@ -60,7 +56,7 @@ export class GitHubService {
         try {
           const since = new Date(
             new Date().getUTCFullYear(),
-            new Date().getMonth(),
+            new Date().getMonth() - 1,
             1,
             0,
             0,
@@ -119,9 +115,10 @@ export class GitHubService {
                   );
                 countedCommitData.push(...commitHistory);
                 countedCommitData = Array.from(new Set(countedCommitData));
-                totalCommits +=
+                const uniquieCommitsForBranch =
                   Number(edge.node.target.history.totalCount || 0) -
                   duplicateOrMergeCommits.length;
+                totalCommits += uniquieCommitsForBranch;
               }
             }
           });

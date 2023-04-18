@@ -6,23 +6,21 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { DelegationService } from './delegation.service';
+import { StakingService } from './staking.service';
 
 @ApiTags('Staking')
 @Controller('staking')
 export class StakingController {
-  constructor(
-    private readonly delegationService: DelegationService,
-  ) {}
+  constructor(private readonly stakingService: StakingService) {}
 
   @Get()
   async stakingData() {
-    const totalStaked = await this.delegationService.totalDelegated();
-    const totalDelegated = await this.delegationService.totalDelegated();
+    const totalStaked = await this.stakingService.totalDelegated();
+    const totalDelegated = await this.stakingService.totalDelegated();
     const avgValidatorCommission = (
-      await this.delegationService.averageWeightedCommission()
-    ).averageWeightedCommission;
-    const avgStakingYield = 20 - (await this.avgValidatorCommission());
+      await this.stakingService.averageWeightedCommission()
+    ).averageWeightedCommission.toString();
+    const avgStakingYield = await this.avgStakingYield();
     return {
       totalStaked,
       totalDelegated,
@@ -38,7 +36,7 @@ export class StakingController {
   @CacheTTL(36000000)
   @UseInterceptors(CacheInterceptor)
   async totalStaked() {
-    return await this.delegationService.totalDelegated();
+    return await this.stakingService.totalDelegated();
   }
 
   /**
@@ -49,7 +47,7 @@ export class StakingController {
   @CacheTTL(36000000)
   @UseInterceptors(CacheInterceptor)
   async totalDelegated() {
-    return await this.delegationService.totalDelegated();
+    return await this.stakingService.totalDelegated();
   }
 
   /**
@@ -60,7 +58,7 @@ export class StakingController {
   @CacheTTL(36000000)
   @UseInterceptors(CacheInterceptor)
   async avgValidatorCommission() {
-    return (await this.delegationService.averageWeightedCommission())
+    return (await this.stakingService.averageWeightedCommission())
       .averageWeightedCommission;
   }
 
@@ -72,6 +70,9 @@ export class StakingController {
   @CacheTTL(36000000)
   @UseInterceptors(CacheInterceptor)
   async avgStakingYield() {
-    return 20 - (await this.avgValidatorCommission());
+    const avgValidatorCommission = await this.avgValidatorCommission();
+    const avgStakingYield =
+      20 * (1 - parseFloat(avgValidatorCommission.toString()));
+    return avgStakingYield.toString();
   }
 }

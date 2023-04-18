@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ethers } from 'ethers';
-import { ValidatorData } from 'src/utils/types';
+import { ValidatorData } from '../utils/types';
 
 @Injectable()
 export class DposContract {

@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { BigNumber } from 'ethers';
-import { DposContract } from 'src/blockchain/dpos.contract';
+import { DposContract } from '../blockchain/dpos.contract';
 import { ValidatorData } from '../utils/types';
-
+import { Decimal } from 'decimal.js';
 @Injectable()
-export class DelegationService {
-  constructor(private readonly dposContract: DposContract) { }
+export class StakingService {
+  constructor(private readonly dposContract: DposContract) {}
 
   async totalDelegated() {
     const validators = await this.dposContract.fetchDelegationData();
@@ -35,10 +35,10 @@ export class DelegationService {
       );
     });
 
-    const weightedAverage =
-      parseFloat(totalWeightedCommission.toString()) /
-      parseFloat(totalDelegation.toString()) /
-      100;
+    const weightedAverage = new Decimal(totalWeightedCommission.toString())
+      .div(new Decimal(totalDelegation.toString()))
+      .div(new Decimal(100))
+      .toString();
 
     return {
       totalDelegated: totalDelegation,

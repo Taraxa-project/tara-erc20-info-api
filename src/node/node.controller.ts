@@ -7,23 +7,30 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { NodeService } from './node.service';
+import { TokenService } from '../token/token.service';
+import { BigNumber } from 'ethers';
 
 @ApiTags('Validators')
 @Controller('validators')
 export class NodeController {
-  constructor(private readonly nodeService: NodeService) {}
+  constructor(
+    private readonly nodeService: NodeService,
+    private readonly tokenService: TokenService,
+  ) {}
 
   @Get()
   async validatorData() {
-    const activeMainnet = (await this.nodeService.noActiveValidators())
-      .totalActive;
-    const activeTestnet = (await this.nodeService.noActiveValidators(true))
-      .totalActive;
-    const cumulativeCommission = await this.nodeService.cumulativeCommisson();
+    const activeMainnet = (
+      await this.nodeService.noActiveValidators()
+    ).totalActive.toString();
+    const activeTestnet = (
+      await this.nodeService.noActiveValidators(true)
+    ).totalActive.toString();
+    // const cumulativeCommission = await this.nodeService.cumulativeCommisson();
     return {
       activeMainnet,
       activeTestnet,
-      cumulativeCommission,
+      cumulativeCommission: '0',
     };
   }
 
@@ -35,7 +42,7 @@ export class NodeController {
   @CacheTTL(36000000)
   @UseInterceptors(CacheInterceptor)
   async totalActiveValidatorsMainnet() {
-    return (await this.nodeService.noActiveValidators()).totalActive;
+    return (await this.nodeService.noActiveValidators()).totalActive.toString();
   }
 
   /**
@@ -46,7 +53,9 @@ export class NodeController {
   @CacheTTL(36000000)
   @UseInterceptors(CacheInterceptor)
   async totaltotalActiveValidatorsTestnet() {
-    return (await this.nodeService.noActiveValidators(true)).totalActive;
+    return (
+      await this.nodeService.noActiveValidators(true)
+    ).totalActive.toString();
   }
 
   /**
@@ -57,6 +66,22 @@ export class NodeController {
   @CacheTTL(36000000)
   @UseInterceptors(CacheInterceptor)
   async cumulativeCommission() {
-    return await this.nodeService.cumulativeCommisson();
+    // return await this.nodeService.cumulativeCommisson();
+    return '0';
+  }
+
+  /**
+   * Returns the cumulative rewards earned by Taraxa Validators on the Taraxa Mainnet
+   * @returns cumulative rewards in ETH
+   */
+  @Get('cumulativeRewards')
+  @CacheTTL(36000000)
+  @UseInterceptors(CacheInterceptor)
+  async cumulativeRewards() {
+    const INITIAL_SUPPLY = '10000000000000000000000000000';
+    const currentSupply = await this.tokenService.totalSupply();
+    return BigNumber.from(currentSupply)
+      .sub(BigNumber.from(INITIAL_SUPPLY).div(BigNumber.from(10).pow(18)))
+      .toString();
   }
 }
