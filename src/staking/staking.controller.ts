@@ -70,9 +70,6 @@ export class StakingController {
   @CacheTTL(36000000)
   @UseInterceptors(CacheInterceptor)
   async avgStakingYield() {
-    const avgValidatorCommission = await this.avgValidatorCommission();
-    const avgStakingYield =
-      20 * (1 - parseFloat(avgValidatorCommission.toString()));
-    return avgStakingYield.toString();
+    return (await this.stakingService.averageStakingYield()).average;
   }
 }

@@ -4,11 +4,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { StakingService } from './staking.service';
 import { StakingController } from './staking.controller';
 import { buildCacheConfig } from '../config/cacheConfig';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
     ConfigModule,
     BlockchainModule,
+    HttpModule,
     CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
