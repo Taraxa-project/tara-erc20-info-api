@@ -25,3 +25,9 @@ export interface MarketDetails {
   circulatingSupply: number;
   marketCap: number;
 }
+export interface ValidatorWithYield {
+  address: string;
+  pbftCount: string;
+  rank: number;
+  yield: number;
+}
