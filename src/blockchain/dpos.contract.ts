@@ -15,7 +15,7 @@ export class DposContract {
     this.instance = new ethers.Contract(
       this.configService.get<string>('dposAddress'),
       [
-        'function getValidators(uint32 batch) view returns (tuple(address account, tuple(uint256 total_stake, uint256 commission_reward, uint16 commission, uint64 last_commission_change, address owner, string description, string endpoint) info)[] validators, bool end)',
+        'function getValidators(uint32 batch) view returns (tuple(address account, tuple(uint256 total_stake, uint256 commission_reward, uint16 commission, uint64 last_commission_change, uint16 undelegations_count, address owner, string description, string endpoint) info)[] validators, bool end)',
       ],
       this.ethersProvider,
     );
