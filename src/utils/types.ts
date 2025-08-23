@@ -1,4 +1,4 @@
-interface ValidatorBasicInfo {
+export interface ValidatorBasicInfo {
   // Total number of delegated tokens to the validator
   total_stake: string;
   // Validator's reward from delegators rewards commission

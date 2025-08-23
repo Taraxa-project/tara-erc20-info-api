@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ethers } from 'ethers';
-import { ValidatorData } from '../utils/types';
+import { ValidatorData, ValidatorBasicInfo } from '../utils/types';
 
 @Injectable()
 export class DposContract {
@@ -16,6 +16,8 @@ export class DposContract {
       this.configService.get<string>('dposAddress'),
       [
         'function getValidators(uint32 batch) view returns (tuple(address account, tuple(uint256 total_stake, uint256 commission_reward, uint16 commission, uint64 last_commission_change, uint16 undelegations_count, address owner, string description, string endpoint) info)[] validators, bool end)',
+        'function getValidator(address validator) view returns (tuple(uint256 total_stake, uint256 commission_reward, uint16 commission, uint64 last_commission_change, uint16 undelegations_count, address owner, string description, string endpoint) validator_info)',
+        'function getValidatorsFor(address owner, uint32 batch) view returns (tuple(address account, tuple(uint256 total_stake, uint256 commission_reward, uint16 commission, uint64 last_commission_change, uint16 undelegations_count, address owner, string description, string endpoint) info)[] validators, bool end)',
       ],
       this.ethersProvider,
     );
@@ -35,5 +37,27 @@ export class DposContract {
       index++;
     }
     return validators;
+  }
+
+  public async fetchDelegationDataFor(
+    address: string,
+  ): Promise<ValidatorData[]> {
+    let validators: ValidatorData[] = [];
+    let isDone = false;
+    let index = 0;
+    while (!isDone) {
+      const res: {
+        validators: ValidatorData[];
+        end: boolean;
+      } = await this.instance.getValidatorsFor(address, index);
+      validators = validators.concat(res.validators);
+      isDone = res.end;
+      index++;
+    }
+    return validators;
+  }
+
+  public async fetchValidator(address: string): Promise<ValidatorBasicInfo> {
+    return this.instance.getValidator(address);
   }
 }

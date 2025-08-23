@@ -5,8 +5,10 @@ import { NodeController } from './node.controller';
 import { NodeService } from './node.service';
 import { buildCacheConfig } from '../config/cacheConfig';
 import { TokenModule } from '../token/token.module';
+import { BlockchainModule } from '../blockchain/blockchain.module';
 @Module({
   imports: [
+    BlockchainModule,
     TokenModule,
     ConfigModule,
     HttpModule,

@@ -4,8 +4,10 @@ import {
   CacheTTL,
   CacheInterceptor,
   UseInterceptors,
+  Query,
+  Param,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { NodeService } from './node.service';
 import { TokenService } from '../token/token.service';
 import { BigNumber } from 'ethers';
@@ -17,6 +19,26 @@ export class NodeController {
     private readonly nodeService: NodeService,
     private readonly tokenService: TokenService,
   ) {}
+
+  @Get('mainnet')
+  @ApiQuery({
+    name: 'owner',
+    type: String,
+    description: 'Get only validators owned by this address',
+    required: false,
+  })
+  @CacheTTL(5000)
+  @UseInterceptors(CacheInterceptor)
+  async mainnetValidators(@Query('owner') owner?: string) {
+    return this.nodeService.mainnetValidators(owner);
+  }
+
+  @Get('mainnet/:address')
+  @CacheTTL(5000)
+  @UseInterceptors(CacheInterceptor)
+  async mainnetValidator(@Param('address') address: string) {
+    return this.nodeService.mainnetValidator(address);
+  }
 
   @Get()
   async validatorData() {
