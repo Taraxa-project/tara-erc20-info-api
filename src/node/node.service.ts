@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { catchError, firstValueFrom, map } from 'rxjs';
+import { DposContract } from 'src/blockchain/dpos.contract';
 
 @Injectable()
 export class NodeService {
@@ -14,7 +15,46 @@ export class NodeService {
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
+    private readonly dposContract: DposContract,
   ) {}
+
+  async mainnetValidators(address?: string) {
+    let validators = [];
+    if (address) {
+      validators = await this.dposContract.fetchDelegationDataFor(address);
+    } else {
+      validators = await this.dposContract.fetchDelegationData();
+    }
+
+    return validators.map((validator) => ({
+      address: validator.account,
+      owner: validator.info.owner,
+      commission: +(
+        parseFloat(`${validator.info.commission}` || '0') / 100
+      ).toPrecision(2),
+      commissionReward: validator.info.commission_reward.toString(),
+      lastCommissionChange: validator.info.last_commission_change.toString(),
+      delegation: validator.info.total_stake.toString(),
+      description: validator.info.description,
+      endpoint: validator.info.endpoint,
+    }));
+  }
+
+  async mainnetValidator(address: string) {
+    const validator = await this.dposContract.fetchValidator(address);
+    return {
+      address,
+      owner: validator.owner,
+      commission: +(
+        parseFloat(`${validator.commission}` || '0') / 100
+      ).toPrecision(2),
+      commissionReward: validator.commission_reward.toString(),
+      lastCommissionChange: validator.last_commission_change.toString(),
+      delegation: validator.total_stake.toString(),
+      description: validator.description,
+      endpoint: validator.endpoint,
+    };
+  }
 
   async noActiveValidators(testnet?: boolean) {
     let indexerRoot: string;
