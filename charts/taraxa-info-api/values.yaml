@@ -14,8 +14,8 @@ app:
   taraDposAddress: 0x00000000000000000000000000000000000000fe
   mainnetDelegationUri: https://api-delegation.community.taraxa.io
   coingeckoUri: https://api.coingecko.com/api/v3/simple/price?ids=taraxa&vs_currencies=usd
-  testnetIndexerRootUrl: https://indexer.testnet.taraxa.io
-  mainnetIndexerRootUrl: https://indexer.mainnet.taraxa.io
+  testnetIndexerRootUrl: https://indexer.testnet.explorer.taraxa.io
+  mainnetIndexerRootUrl: https://indexer.mainnet.explorer.taraxa.io
   redisHost: 10.39.114.11
   redisPort: 6379
   serverPort: 3000
